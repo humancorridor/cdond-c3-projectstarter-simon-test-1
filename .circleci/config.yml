@@ -73,7 +73,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Test frontend code
+          name: Run Unit Test on frontend code
           command: |
             cd frontend
             npm install
@@ -85,7 +85,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Test backend code
+          name: Run Unit Test on backend code
           command: |
             cd backend
             npm install
