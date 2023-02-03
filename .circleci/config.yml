@@ -49,8 +49,8 @@ jobs:
             cd frontend
             npm install
             npm run build
-      - slack/notify:
-          event: always
+      # - slack/notify:
+      #     event: always
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -68,8 +68,8 @@ jobs:
             cd backend
             npm install
             npm run build
-      - slack/notify:
-          event: always
+      # - slack/notify:
+      #     event: always
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -296,11 +296,11 @@ workflows:
   default:
     jobs:
       - build-frontend
-          context:
-            - slack
+          # context:
+          #   - slack
       - build-backend
-          context:
-            - slack
+          # context:
+          #   - slack
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
