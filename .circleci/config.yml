@@ -301,11 +301,12 @@ jobs:
             
 
 workflows:
+  default:
   # send-notification:
     jobs:
       # -notify:
       #   context: slack-secrets
-      # - build-frontend
+      - build-frontend
           # context:
           #   - slack
       - build-backend
