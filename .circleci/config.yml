@@ -145,23 +145,23 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Ensure back-end infrastructure exists
+          name: Ensure backend infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=udapeople-tag \
+              #--tags project=udapeople \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
-          name: Ensure front-end infrastructure exist
+          name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              #--tags project=your-tag \
+              #--tags project=udapeople \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
       - run:
-          name: Add back-end ip to ansible inventory
+          name: Add backend ip to ansible inventory
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -175,38 +175,38 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
-
-  configure-infrastructure:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-            apk add --update  tar gzip
-            apk add --update curl
-            apk add --no-cache \
-            python3 \
-            py3-pip \
-            && pip3 install --upgrade pip \
-            && pip3 install --no-cache-dir \
-            awscli \
-            && rm -rf /var/cache/apk/*
-      - run:
-          name: Configure server
-          command: |
-            cat .circleci/ansible/inventory.txt
-            ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
+
+  # configure-infrastructure:
+  #   docker:
+  #     - image: python:3.7-alpine3.11
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           apk add --update ansible
+  #           apk add --update  tar gzip
+  #           apk add --update curl
+  #           apk add --no-cache \
+  #           python3 \
+  #           py3-pip \
+  #           && pip3 install --upgrade pip \
+  #           && pip3 install --no-cache-dir \
+  #           awscli \
+  #           && rm -rf /var/cache/apk/*
+  #     - run:
+  #         name: Configure server
+  #         command: |
+  #           cat .circleci/ansible/inventory.txt
+  #           ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
+  #     - destroy-environment:
+  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
 #   run-migrations:
 #     docker:
@@ -322,7 +322,7 @@ jobs:
             
 
 workflows:
-  default3:
+  default:
   # send-notification:
     jobs:
       # -notify:
@@ -348,10 +348,10 @@ workflows:
           filters:
             branches:
               only: [test-feature-branch]
-      - configure-infrastructure:
-            # context:
-            #   - slack
-          requires: [deploy-infrastructure]
+      # - configure-infrastructure:
+      #       # context:
+      #       #   - slack
+      #     requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
