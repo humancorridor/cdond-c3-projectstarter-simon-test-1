@@ -1,23 +1,4 @@
----    
-# - name: Install Python
-#   apt:
-#     name: python
-#     state: latest
-    
-# - name: "nodesource installation"
-#   shell: curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-
-# - name: "install nodejs"
-#   apt:
-#     update_cache: yes
-#     name: nodejs
-#     state: latest
-
-# - name: "install pm2"
-#   npm:
-#     name: pm2
-#     global: yes
-
+---
 - name: update and upgrade packages  # sudo apt upgrade
   become: yes
   apt:

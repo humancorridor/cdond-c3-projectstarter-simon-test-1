@@ -195,12 +195,11 @@ jobs:
   #     - checkout
   #     - add_ssh_keys:
   #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - install_ansible
   #     # - run:
   #     #     name: Install dependencies
   #     #     command: |
+  #     #       apk add --update ansible --no-cache tar gzip ansible awscli
+
   #     #       apk add --update ansible
   #     #       apk add --update  tar gzip
   #     #       apk add --update curl
@@ -211,6 +210,9 @@ jobs:
   #     #       && pip3 install --no-cache-dir \
   #     #       awscli \
   #     #       && rm -rf /var/cache/apk/*
+
+  #     - attach_workspace:
+  #         at: ~/
   #     - run:
   #         name: Configure EC2-instance server
   #         command: |
@@ -229,7 +231,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - install_ansible
-
       - run:
           name: Configure EC2-instance server
           command: |
@@ -239,18 +240,48 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
+#   run-migrations:
+#     docker:
+#       - image: circleci/node:13.8.0
+#     steps:
+#       - checkout
+#       - run:
+#           name: Run migrations
+#           command: |
+#             cd backend
+#             npm install
+#             npm run migrations > migrations_dump.txt
+            
+#       - run:
+#           name: Send migration status to kvdb.io
+#           command: |   
+#             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+#             then
+#                 curl https://kvdb.io/MogVSiXw2CcXM5E6mtu5fJ/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+#             fi
+# #rolls back; should migration fail
+#       - destroy-environment:
+#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+#       - revert-migrations           
+       
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python3.7-alpine3.16
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
             npm install
-            npm run migrations > migrations_dump.txt
-            
+            npm run build
+            npm run migrations >> migrations_dump.txt            
       - run:
           name: Send migration status to kvdb.io
           command: |   
@@ -261,8 +292,7 @@ jobs:
 #rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-      - revert-migrations           
-       
+      - revert-migrations    
 
 #   deploy-frontend:
 #     docker:
