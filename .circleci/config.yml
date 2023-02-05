@@ -333,20 +333,20 @@ workflows:
     jobs:
       # -notify:
       #   context: slack-secrets
-      # - build-frontend
+      - build-frontend
           # context:
           #   - slack
-      # - build-backend
+      - build-backend
           # context:
           #   - slack
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       - deploy-infrastructure:
             # context:
             #   - slack
