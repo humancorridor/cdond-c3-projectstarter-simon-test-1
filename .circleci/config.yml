@@ -1,16 +1,17 @@
 version: 2.1
 
 commands:
-  # install_ansible:
-  #   description: Install Ansible
-  #   steps:
-  #     - run:
-  #         name:
-  #         command: |
-  #           sudo apt update
-  #           sudo apt install software-properties-common -y
-  #           sudo add-apt-repository --yes --update ppa:ansible/ansible
-  #           sudo apt install ansible -y
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name:
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+            sudo apt install awscli -y
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -196,19 +197,20 @@ jobs:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-            apk add --update  tar gzip
-            apk add --update curl
-            apk add --no-cache \
-            python3 \
-            py3-pip \
-            && pip3 install --upgrade pip \
-            && pip3 install --no-cache-dir \
-            awscli \
-            && rm -rf /var/cache/apk/*
+      - install_ansible
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       apk add --update ansible
+      #       apk add --update  tar gzip
+      #       apk add --update curl
+      #       apk add --no-cache \
+      #       python3 \
+      #       py3-pip \
+      #       && pip3 install --upgrade pip \
+      #       && pip3 install --no-cache-dir \
+      #       awscli \
+      #       && rm -rf /var/cache/apk/*
       - run:
           name: Configure EC2-instance server
           command: |
