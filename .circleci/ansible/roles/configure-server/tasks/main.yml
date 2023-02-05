@@ -1,0 +1,46 @@
+---    
+# - name: Install Python
+#   apt:
+#     name: python
+#     state: latest
+    
+# - name: "nodesource installation"
+#   shell: curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+# - name: "install nodejs"
+#   apt:
+#     update_cache: yes
+#     name: nodejs
+#     state: latest
+
+# - name: "install pm2"
+#   npm:
+#     name: pm2
+#     global: yes
+
+- name: update and upgrade packages  # sudo apt upgrade
+  become: yes
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+- name: remove dependences that are not needed  # sudo apt autoremove
+  become: yes
+  apt:
+    autoremove: yes
+- name: install dependences  # sudo apt install nodejs npm
+  become: yes
+  apt:
+    name: ['nodejs', 'npm']
+    state: latest
+    update_cache: yes
+- name: install pm2  # sudo npm install pm2 -g
+  become: yes
+  npm:
+    name: pm2
+    global: yes
+    state: latest
+    production: yes
+
+
+...

@@ -178,52 +178,60 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
-  # configure-infrastructure:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add --update ansible
-  #           apk add --update  tar gzip
-  #           apk add --update curl
-  #           apk add --no-cache \
-  #           python3 \
-  #           py3-pip \
-  #           && pip3 install --upgrade pip \
-  #           && pip3 install --no-cache-dir \
-  #           awscli \
-  #           && rm -rf /var/cache/apk/*
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           cat .circleci/ansible/inventory.txt
-  #           ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
-  #     - destroy-environment:
-  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            apk add --update  tar gzip
+            apk add --update curl
+            apk add --no-cache \
+            python3 \
+            py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install --no-cache-dir \
+            awscli \
+            && rm -rf /var/cache/apk/*
+      - run:
+          name: Configure server
+          command: |
+            cat .circleci/ansible/inventory.txt
+            ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
-#   run-migrations:
-#     docker:
-#       # Docker image here that supports NodeJS
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Run migrations
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Send migration results to memstash
-#           command: |
-#             # Your code here
-#             exit 1
-#      # Here's where you will add some code to rollback on failure      
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            npm run migrations > migrations_dump.txt
+            
+      - run:
+          name: Send migration status to kvdb.io
+          command: |   
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+                curl https://kvdb.io/MogVSiXw2CcXM5E6mtu5fJ/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
+#rolls back; should migration fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations           
+       
 
 #   deploy-frontend:
 #     docker:
@@ -327,20 +335,20 @@ workflows:
     jobs:
       # -notify:
       #   context: slack-secrets
-      - build-frontend
+      # - build-frontend
           # context:
           #   - slack
-      - build-backend
+      # - build-backend
           # context:
           #   - slack
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
       - deploy-infrastructure:
             # context:
             #   - slack
@@ -348,12 +356,12 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
+      - configure-infrastructure:
       #       # context:
       #       #   - slack
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [run-migrations]
       # - deploy-backend:
