@@ -1,16 +1,16 @@
 version: 2.1
 
 commands:
-  install_ansible:
-    description: Install Ansible
-    steps:
-      - run:
-          name:
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
+  # install_ansible:
+  #   description: Install Ansible
+  #   steps:
+  #     - run:
+  #         name:
+  #         command: |
+  #           sudo apt update
+  #           sudo apt install software-properties-common -y
+  #           sudo add-apt-repository --yes --update ppa:ansible/ansible
+  #           sudo apt install ansible -y
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -187,46 +187,15 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
-  # configure-infrastructure:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add --update ansible
-  #           apk add --update  tar gzip
-  #           apk add --update curl
-  #           apk add --no-cache \
-  #           python3 \
-  #           py3-pip \
-  #           && pip3 install --upgrade pip \
-  #           && pip3 install --no-cache-dir \
-  #           awscli \
-  #           && rm -rf /var/cache/apk/*
-  #     - run:
-  #         name: Configure EC2-instance server
-  #         command: |
-  #           cat .circleci/ansible/inventory.txt
-  #           ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
-  #     - destroy-environment:
-  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
-
   configure-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
       - attach_workspace:
           at: ~/
-      # - install_ansible
       - run:
           name: Install dependencies
           command: |
@@ -243,11 +212,42 @@ jobs:
       - run:
           name: Configure EC2-instance server
           command: |
-            cd .circleci/ansible
             cat .circleci/ansible/inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml 
+            ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt 
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
+
+  # configure-infrastructure:
+  #   docker:
+  #     - image: cimg/base:stable
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+  #     - attach_workspace:
+  #         at: ~/
+  #     - install_ansible
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           apk add --update ansible
+  #           apk add --update  tar gzip
+  #           apk add --update curl
+  #           apk add --no-cache \
+  #           python3 \
+  #           py3-pip \
+  #           && pip3 install --upgrade pip \
+  #           && pip3 install --no-cache-dir \
+  #           awscli \
+  #           && rm -rf /var/cache/apk/*
+  #     - run:
+  #         name: Configure EC2-instance server
+  #         command: |
+  #           cd .circleci/ansible
+  #           cat .circleci/ansible/inventory.txt
+  #           ansible-playbook -i inventory.txt configure-server.yml 
+  #     - destroy-environment:
+  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
   run-migrations:
     docker:
