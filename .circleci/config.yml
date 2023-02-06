@@ -225,13 +225,19 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: amazon/aws-cli
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-
-      - install_dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            yum update -y
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            amazon-linux-extras install -y epel
+            yum install -y ansible 
+      # - install_dependencies
       - run:
           name: Configure EC2-instance server
           command: |
@@ -240,6 +246,7 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml 
       - attach_workspace:
           at: ~/
+# rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
@@ -331,9 +338,9 @@ jobs:
           command: |
             yum update -y
             yum install -y tar gzip
-            sudo yum install -y nodejs
-          # yum install -y npm
-          
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            amazon-linux-extras install -y epel            
+            yum install -y npm          
       - attach_workspace:
           at: ~/    
       - restore_cache:
@@ -359,6 +366,7 @@ jobs:
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+# rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
       - revert-migrations:
@@ -379,9 +387,9 @@ jobs:
             yum update -y
             yum install -y  tar gzip
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-            sudo yum install -y nodejs
             amazon-linux-extras install -y epel
-            yum install -y ansible           
+            yum install -y ansible
+            yum install -y npm                          
       - attach_workspace:
           at: ~/      
       - run:
@@ -397,6 +405,7 @@ jobs:
             cat inventory.txt
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
+# rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
       - revert-migrations:
