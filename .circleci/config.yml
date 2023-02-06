@@ -328,8 +328,8 @@ jobs:
           command: |
             yum update -y
             yum install -y tar gzip
-            yum install -y nodejs
-            yum install -y npm
+            sudo yum install -y nodejs
+          # yum install -y npm
             
       # - attach_workspace:
       #     at: ~/    
@@ -375,10 +375,9 @@ jobs:
             yum update -y
             yum install -y  tar gzip
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-            yum install -y nodejs
+            sudo yum install -y nodejs
             amazon-linux-extras install -y epel
-            yum install -y ansible 
-            sudo amazon-linux-extras install ansible2 -y           
+            yum install -y ansible           
       - attach_workspace:
           at: ~/      
       - run:
