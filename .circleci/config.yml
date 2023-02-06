@@ -339,7 +339,6 @@ jobs:
           command: |
             yum update -y
             yum install -y tar gzip
-            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel            
             yum install -y npm          
       - attach_workspace:
@@ -387,7 +386,6 @@ jobs:
           command: |
             yum update -y
             yum install -y  tar gzip
-            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install -y ansible
             yum install -y npm                          
@@ -428,6 +426,7 @@ jobs:
 #       - run:
 #           name: Deploy backend
 #           command: |
+#            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
 #             # your code here
 #       # Here's where you will add some code to rollback on failure  
 
@@ -443,6 +442,7 @@ jobs:
 #       - run:
 #           name: Get backend url
 #           command: |
+#            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
 #             # your code here
 #       - run:
 #           name: Backend smoke test.
