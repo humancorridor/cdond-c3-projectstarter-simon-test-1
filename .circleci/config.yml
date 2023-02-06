@@ -331,16 +331,13 @@ jobs:
 # copy frontend build to S3 bucket
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.16
     steps:
       - checkout
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: |
-            yum update -y
-            yum install -y tar gzip
-            amazon-linux-extras install -y epel            
-            yum install -y npm          
+            apk add --update --no-cache tar gzip nodejs npm aws-cli      
       - attach_workspace:
           at: ~/    
       - restore_cache:
@@ -372,6 +369,20 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
+  # deploy-frontend:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: install dependencies
+  #         command: |
+  #           yum update -y
+  #           yum install -y tar gzip
+  #           amazon-linux-extras install -y epel            
+  #           yum install -y npm  
+
+
 #unarchive backend server build to EC2 instance with ansible                    
   deploy-backend:
     docker:
@@ -384,11 +395,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum update -y
-            yum install -y  tar gzip
-            amazon-linux-extras install -y epel
-            yum install -y ansible
-            yum install -y npm                          
+            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible                        
       - attach_workspace:
           at: ~/      
       - run:
@@ -409,6 +416,24 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+  # deploy-backend:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           yum update -y
+  #           yum install -y  tar gzip
+  #           amazon-linux-extras install -y epel
+  #           yum install -y ansible
+  #           yum install -y npm    
+
 
 #   deploy-backend:
 #     docker:
