@@ -234,6 +234,7 @@ jobs:
           name: Install dependencies
           command: |
             yum update -y
+            yum install -y tar gzip            
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install -y ansible 
