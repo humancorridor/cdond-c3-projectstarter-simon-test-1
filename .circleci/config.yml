@@ -1,8 +1,8 @@
 version: 2.1
 
 commands:
-  install_ansible:
-    description: Install Ansible
+  install_dependencies:
+    description: Install Ansible and awscli
     steps:
       - run:
           name:
@@ -228,15 +228,16 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-      - attach_workspace:
-          at: ~/
-      - install_ansible
+
+      - install_dependencies
       - run:
           name: Configure EC2-instance server
           command: |
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml 
+      - attach_workspace:
+          at: ~/
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
@@ -290,13 +291,13 @@ jobs:
             then
                 curl https://kvdb.io/DqZVv2PAwyBRsc3N93494u/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
+# rolls back; should migration fail
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-#rolls back; should migration fail
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations    
 
-#   deploy-frontend:
-#     docker:
+  deploy-frontend:
+    docker:
 #       # Docker image here that supports AWS CLI
 #     steps:
 #       # Checkout code from git
@@ -315,7 +316,90 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure      
-                    
+
+#copy frontend build to S3 bucket
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            sudo yum update -y
+            sudo yum install -y tar gzip
+          # curl -sL https://rpm.nodesource.com/setup_13.x |  bash -
+            sudo yum install -y nodejs
+            sudo yum install -y npm
+            
+      # - attach_workspace:
+      #     at: ~/    
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$( aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:project,Values=udapeople" \
+            --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            cat .env
+            npm install
+            npm run build
+            ls -al
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations
+    
+#unarchive backend server build to EC2 instance with ansible                    
+  deploy-backend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo yum update -y
+            sudo yum install -y  tar gzip
+          # curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            sudo yum install -y nodejs
+          # amazon-linux-extras install -y epel
+          # yum install -y ansible 
+            sudo amazon-linux-extras install ansible2 -y           
+      - attach_workspace:
+          at: ~/      
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm install
+            npm run build
+            cd ..         
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ls -l ~/project/
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations 
+
+
 #   deploy-backend:
 #     docker:
 #       # Docker image here that supports Ansible
@@ -397,37 +481,37 @@ workflows:
     jobs:
       # -notify:
       #   context: slack-secrets
-      - build-frontend
-          # context:
-          #   - slack
-      - build-backend
-          # context:
-          #   - slack
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-            # context:
-            #   - slack
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
+      # - build-frontend
+      #     # context:
+      #     #   - slack
+      # - build-backend
+      #     # context:
+      #     #   - slack
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
       #       # context:
       #       #   - slack
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      # #       # context:
+      # #       #   - slack
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
