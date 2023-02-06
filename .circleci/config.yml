@@ -337,7 +337,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip nodejs npm aws-cli      
+            apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
       - attach_workspace:
           at: ~/    
       - restore_cache:
@@ -386,7 +386,7 @@ jobs:
 #unarchive backend server build to EC2 instance with ansible                    
   deploy-backend:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.16
     steps:
       - checkout
       - add_ssh_keys:
@@ -395,7 +395,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible                        
+            apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible                        
       - attach_workspace:
           at: ~/      
       - run:
@@ -424,7 +424,6 @@ jobs:
   #     - checkout
   #     - add_ssh_keys:
   #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-
   #     - run:
   #         name: Install dependencies
   #         command: |
