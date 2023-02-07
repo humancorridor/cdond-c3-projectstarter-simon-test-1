@@ -33,7 +33,6 @@
   become: yes
   shell:
     pm2 stop default
-    # pm2 delete all
     pm2 start npm -- start
 
 
