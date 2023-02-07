@@ -338,8 +338,10 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
-      - restore_cache:
-          keys: [frontend-build]
+      - attach_workspace:
+          at: ~/    
+      # - restore_cache:
+      #     keys: [frontend-build]
       - run:
           name: Get backend url
           command: |
@@ -476,6 +478,10 @@ jobs:
             else
                 return 1
             fi
+
+      # - attach_workspace:
+      #     at: ~/ 
+#            export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)
           #  curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             # your code here
       - run:

@@ -32,8 +32,10 @@
 - name: start server with pm2
   become: yes
   shell:
-    pm2 delete all
+    pm2 stop default
+    # pm2 delete all
     pm2 start npm -- start
+
 
 
 # - name: delay process by 60 seconds
