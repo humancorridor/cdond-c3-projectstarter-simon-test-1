@@ -36,45 +36,6 @@
     pm2 start npm -- start
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # - name: delay process by 60 seconds
 #   ansible.builtin.pause:
 #     minutes: 1

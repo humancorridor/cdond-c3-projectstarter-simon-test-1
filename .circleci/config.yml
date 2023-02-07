@@ -408,7 +408,7 @@ jobs:
             cd ..         
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------" #$(cat inventory.txt)
+            echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
@@ -445,6 +445,7 @@ jobs:
 #       - run:
 #           name: Install dependencies
 #           command: |
+#           $(cat inventory.txt)
           # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
           # mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
 #             # your code here
@@ -478,12 +479,6 @@ jobs:
             else
                 return 1
             fi
-
-      # - attach_workspace:
-      #     at: ~/ 
-#            export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)
-          #  curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-            # your code here
       - run:
           name: Frontend smoke test.
           command: |
@@ -491,7 +486,7 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-                return 0
+                return 1
             else
                 return 1
             fi
@@ -500,6 +495,11 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}        
 
+      # - attach_workspace:
+      #     at: ~/ 
+#            export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)
+          #  curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            # your code here
 #       # Here's where you will add some code to rollback on failure  
 
 #   cloudfront-update:
@@ -574,8 +574,8 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
