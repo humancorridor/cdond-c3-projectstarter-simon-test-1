@@ -478,7 +478,7 @@ jobs:
             
             if curl --connect-timeout 5 -s "${API_URL}/api/status" | grep "ok"
             then
-                return 1
+                return 0
             else
                 return 1
             fi
