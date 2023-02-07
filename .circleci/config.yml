@@ -478,7 +478,7 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030"
-            if curl "${API_URL}/api/status" | grep "ok"
+            if curl --connect-timeout 5 -s "${API_URL}/api/status" | grep "ok"
             then
                 return 0
             else
@@ -547,7 +547,117 @@ jobs:
 #             then
 #               # your code here
 #             fi
-            
+
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations 
+
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Get all stack workflow id and remove old stack files
+          command: |
+            CURRENT_WORKFLOW_ID=${CIRCLE_WORKFLOW_ID:0:7}
+            echo current workflow id: $CURRENT_WORKFLOW_ID
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            mystacks=($STACKS)
+            echo ${#mystacks[@]} items in stack :
+            echo $mystacks
+            for work_id in ${mystacks[@]}
+            do
+            if [ ${work_id: -7} != $CURRENT_WORKFLOW_ID ]
+            then
+                aws s3 rm "s3://udapeople-${work_id: -7}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${work_id: -7}"
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${work_id: -7}"
+                echo $work_id removed from stack
+            else
+              echo No old stack to remove
+            fi
+            done
+
+  configure-node-exporter:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
+      - run:
+          name: Install dependencies
+          command: |
+            yum update -y
+            yum install -y  tar gzip
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            yum install -y nodejs
+            amazon-linux-extras install -y epel
+            yum install -y ansible
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Configure node_exporter
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook  node-exporter-config.yml -i inventory.txt
+
+  deploy-prometheus-server:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
+      - run:
+          name: Install dependencies
+          command: |
+            yum update -y
+            yum install -y  tar gzip
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            yum install -y nodejs
+            amazon-linux-extras install -y epel
+            yum install -y ansible
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Spin up EC2 server for prometheus
+          command: |
+            echo "[server]" >> .circleci/ansible/inventory.txt
+            aws cloudformation deploy \
+              --template-file .circleci/files/prometheus-server.yml \
+              --tags project=prometheus \
+              --stack-name udapeople-prometheus-${CIRCLE_WORKFLOW_ID:0:7} \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Append IP to inventory file
+          command: aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=prometheus" --output text >> .circleci/ansible/inventory.txt
+      - run:
+          name: Install prometheus and alertmanager on server
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt prometheus-alertmanager-config.yml  
+
+
+workflows:            
 
 workflows:
   default:
@@ -592,3 +702,7 @@ workflows:
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
+        # - configure-node-exporter:
+        #     requires: [smoke-test]
+        # - deploy-prometheus-server:
+        #     requires: [configure-node-exporter]
