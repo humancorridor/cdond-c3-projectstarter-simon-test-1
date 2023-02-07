@@ -338,10 +338,10 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
-      - attach_workspace:
-          at: ~/    
-      # - restore_cache:
-      #     keys: [frontend-build]
+      - restore_cache:
+          keys: [frontend-build]
+      # - attach_workspace:
+      #     at: ~/    
       - run:
           name: Get backend url
           command: |
@@ -407,9 +407,10 @@ jobs:
             npm run build
             cd ..         
             tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
+            echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
 # rolls back; should migration fail
@@ -446,8 +447,8 @@ jobs:
 #           name: Install dependencies
 #           command: |
 #           $(cat inventory.txt)
-          # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-          # mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+#           mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+#           mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
 #             # your code here
 #       - run:
 #           name: Deploy backend
@@ -464,7 +465,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip curl aws-cli npm
+            apk add --update --no-cache tar gzip nodejs npm curl aws-cli
       - run:
           name: Get backend url and run backend smoke test
           command: |
@@ -475,7 +476,6 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030"
-            
             if curl --connect-timeout 5 -s "${API_URL}/api/status" | grep "ok"
             then
                 return 0
@@ -498,6 +498,7 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}        
 
+# --connect-timeout 5 -s
       # - attach_workspace:
       #     at: ~/ 
 #            export BACKEND_IP=$(tail ~/project/.circleci/ansible/inventory.txt)

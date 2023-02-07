@@ -25,8 +25,8 @@
 - name: extract artifact
   become: yes
   unarchive:
-    src: ~/project/artifact.tar.gz
-    dest: ~/
+    src: files/artifact.tar.gz
+    dest: .
 
 - name: start server with pm2
   become: yes
