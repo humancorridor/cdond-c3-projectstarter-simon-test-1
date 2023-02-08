@@ -414,10 +414,10 @@ jobs:
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
 # rolls back; should migration fail
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-      # - revert-migrations:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   # deploy-backend:
   #   docker:
@@ -459,13 +459,24 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.7-alpine3.16 
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache curl aws-cli
+            sudo apt install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
+    # docker:
+    #   - image: python:3.7-alpine3.16 
+    # steps:
+    #   - checkout
+    #   - run:
+    #       name: Install dependencies
+    #       command: |
+    #         apk add --update --no-cache curl aws-cli
       - attach_workspace:
           at: ~/ 
       - run:
