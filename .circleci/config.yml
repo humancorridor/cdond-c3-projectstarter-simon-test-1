@@ -204,8 +204,6 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
 
-
-
   # configure-infrastructure:
   #   docker:
   #     - image: python:3.7-alpine3.11
@@ -256,14 +254,16 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
             yum update -y
             amazon-linux-extras install -y epel
             yum install -y ansible 
-#           yum install -y tar gzip            
-#           curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            yum install -y tar gzip            
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
       - run:
           name: Configure EC2-instance server
           command: |
@@ -271,8 +271,6 @@ jobs:
             cat inventory.txt
             env
             ansible-playbook -i inventory.txt configure-server.yml 
-      - attach_workspace:
-          at: ~/
 # rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
