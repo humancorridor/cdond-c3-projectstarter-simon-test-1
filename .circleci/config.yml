@@ -55,17 +55,23 @@ orbs:
 jobs:
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:13.8.0  # Executor
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
+      # - restore_cache:
+      #     keys: [frontend-build]
       - run:
           name: Build front-end
           command: |
+            cd ..
+            ls -al
+            cd project
             cd frontend
+            ls -al
             npm install
             npm run build
+            ls -al
+            
       # - slack/notify:
       #     event: fail
       #       template: basic_fail_1
@@ -81,14 +87,18 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      # - restore_cache:
+      #     keys: [backend-build]
       - run:
           name: Back-end build
           command: |
+            cd ..
+            ls -a
             cd backend
+            ls -al
             npm install
             npm run build
+            ls -al
       # - slack/notify:
       #     event: fail
       #       template: basic_fail_1
@@ -104,11 +114,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-build]      
       - run:
           name: Run Unit Test on frontend code
           command: |
             cd frontend
-            npm install
+          # npm install
             npm run test
                 
   test-backend:
@@ -116,11 +128,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]      
       - run:
           name: Run Unit Test on backend code
           command: |
             cd backend
-            npm install
+          # npm install
             npm run test
             
   scan-frontend:
@@ -134,8 +148,8 @@ jobs:
           name: Scan frontend packages for security vulnerabilities
           command: |
             cd frontend
-            npm install
-            npm audit fix --audit-level=critical         
+          # npm install
+            npm audit fix --audit-level=critical --force  
 
   scan-backend:
     docker:
@@ -148,7 +162,7 @@ jobs:
           name: Scan backend packages for security vulnerabilities
           command: |
             cd backend
-            npm install
+          # npm install
             npm audit fix --audit-level=critical --force 
 
   deploy-infrastructure:
@@ -179,10 +193,10 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople" \
             --output text >> .circleci/ansible/inventory.txt
-      - run:
-          name: install tar utility
-          command: |
-            yum install -y tar gzip
+      # - run:
+      #     name: install tar utility
+      #     command: |
+      #       yum install -y tar gzip
       - persist_to_workspace:
           root: ~/
           paths:
@@ -234,8 +248,8 @@ jobs:
           name: Install dependencies
           command: |
             yum update -y
-            yum install -y tar gzip            
-            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+          # yum install -y tar gzip            
+          # curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install -y ansible 
       # - install_dependencies
@@ -358,7 +372,8 @@ jobs:
           command: |
             cd frontend
             cat .env
-            npm install
+          # npm install
+            ls -al
             npm run build
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
@@ -403,12 +418,12 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            npm install
+          # npm install
             npm run build
             cd ..         
             tar -C backend -czvf artifact.tar.gz .
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            # mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
             ls -l ~/project/
@@ -489,7 +504,7 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030"
-            if [curl "${API_URL}/api/status" | grep "ok"];
+            if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
             else

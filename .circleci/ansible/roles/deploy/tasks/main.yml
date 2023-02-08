@@ -25,8 +25,8 @@
 - name: extract artifact
   become: yes
   unarchive:
-    src: files/artifact.tar.gz
-    dest: .
+    src: ~/project/artifact.tar.gz 
+    dest: ~/
 
 - name: start server with pm2
   become: yes
@@ -46,6 +46,10 @@
 #     src: ~/project/artifact.tar.gz 
 #     dest: ~/
   
+      # src: files/artifact.tar.gz
+    # dest: .
+
+    
 # - name: npm install all
 #   command: npm install
 
