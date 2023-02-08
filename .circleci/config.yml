@@ -254,16 +254,16 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
             yum update -y
+            yum install -y tar gzip    
             amazon-linux-extras install -y epel
             yum install -y ansible 
-            yum install -y tar gzip            
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+      - attach_workspace:
+          at: ~/
       - run:
           name: Configure EC2-instance server
           command: |
