@@ -71,7 +71,6 @@ jobs:
             npm install
             npm run build
             ls -al
-            
       # - slack/notify:
       #     event: fail
       #       template: basic_fail_1
@@ -93,7 +92,8 @@ jobs:
           name: Back-end build
           command: |
             cd ..
-            ls -a
+            ls -al
+            cd project
             cd backend
             ls -al
             npm install
@@ -120,8 +120,8 @@ jobs:
           name: Run Unit Test on frontend code
           command: |
             cd frontend
-            npm run test
-#           npm install                
+            npm run test                
+  
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -133,8 +133,8 @@ jobs:
           name: Run Unit Test on backend code
           command: |
             cd backend
-            npm run test
-#           npm install           
+            npm run test          
+  
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -146,8 +146,9 @@ jobs:
           name: Scan frontend packages for security vulnerabilities
           command: |
             cd frontend
+            npm install
             npm audit fix --audit-level=critical --force  
-#           npm install
+  
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -159,8 +160,9 @@ jobs:
           name: Scan backend packages for security vulnerabilities
           command: |
             cd backend
+            npm install
             npm audit fix --audit-level=critical --force 
-#           npm install
+  
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -196,7 +198,6 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
-
 
 # - run:
 #     name: install tar utility
