@@ -226,6 +226,16 @@ jobs:
   configure-infrastructure:
     docker:
       - image: amazon/aws-cli
+    environment:
+      TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+      TYPEORM_ENTITIES: $TYPEORM_ENTITIES
+      TYPEORM_HOST: $TYPEORM_HOST
+      TYPEORM_PORT: $TYPEORM_PORT
+      TYPEORM_USERNAME: $TYPEORM_USERNAME
+      TYPEORM_PASSWORD: $TYPEORM_PASSW
+      TYPEORM_DATABASE: $TYPEORM_DATABASE
+      TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+      TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
     steps:
       - checkout
       - add_ssh_keys:
@@ -244,6 +254,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
+            env
             ansible-playbook -i inventory.txt configure-server.yml 
       - attach_workspace:
           at: ~/
@@ -633,6 +644,8 @@ jobs:
   deploy-prometheus-server:
     docker:
       - image: amazon/aws-cli
+    environment:
+
     steps:
       - checkout
       - add_ssh_keys:
