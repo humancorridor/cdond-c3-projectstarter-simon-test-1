@@ -414,10 +414,10 @@ jobs:
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      # - destroy-environment:
+      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      # - revert-migrations:
+      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   # deploy-backend:
   #   docker:
