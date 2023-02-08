@@ -195,7 +195,6 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople" \
             --output text >> .circleci/ansible/inventory.txt
-
       - persist_to_workspace:
           root: ~/
           paths:
@@ -258,10 +257,8 @@ jobs:
           name: Install dependencies
           command: |
             yum update -y
-          # yum install -y tar gzip    
             amazon-linux-extras install -y epel
             yum install -y ansible 
-          # curl -sL https://rpm.nodesource.com/setup_13.x | bash -
       - run:
           name: Configure EC2-instance server
           command: |
@@ -273,6 +270,11 @@ jobs:
 # rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+
+
+# yum install -y tar gzip
+# curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+
 
 #   run-migrations:
 #     docker:
