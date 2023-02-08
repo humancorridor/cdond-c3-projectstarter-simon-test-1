@@ -262,7 +262,7 @@ jobs:
           # curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install -y ansible 
-      # - install_dependencies
+
       - run:
           name: Configure EC2-instance server
           command: |
@@ -383,12 +383,12 @@ jobs:
           command: |
             cd frontend
             cat .env
-          # npm install
             ls -al
             npm run build
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+#           npm install
 # rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
@@ -429,7 +429,6 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-          # npm install
             npm run build
             cd ..         
             tar -C backend -czvf artifact.tar.gz .
@@ -439,6 +438,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
             ls -l ~/project/
             ansible-playbook -i inventory.txt deploy-backend.yml
+#           npm install
 # rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
