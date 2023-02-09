@@ -203,28 +203,28 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
 
-  configure-infrastructure:
-    docker:
-      - image: python:3.8-alpine3.15
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update --no-cache tar gzip curl nodejs npm aws-cli  
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Configure EC2-instance server
-          command: |
-            ls -al
-            cd .circleci/ansible
-            ls -al
-            ansible-playbook configure-server.yml -i inventory.txt 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
+  # configure-infrastructure:
+  #   docker:
+  #     - image: python:3.8-alpine3.15
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           apk add --update --no-cache tar gzip curl nodejs npm aws-cli  
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: Configure EC2-instance server
+  #         command: |
+  #           ls -al
+  #           cd .circleci/ansible
+  #           ls -al
+  #           ansible-playbook configure-server.yml -i inventory.txt 
+  #     - destroy-environment:
+  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
 #     cat .circleci/ansible/inventory.txt
 
@@ -241,33 +241,33 @@ jobs:
 # apk add --update ansible --no-cache tar gzip curl ansible awscli
 
 
-#   configure-infrastructure:
-#     docker:
-#       - image: amazon/aws-cli
-#     steps:
-#       - checkout
-#       - add_ssh_keys:
-#           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             yum update -y
-#             yum install tar gzip -y
-#             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-#             amazon-linux-extras install -y epel
-#             yum install ansible -y
-#       - attach_workspace:
-#           at: ~/  
-#       - run:
-#           name: Configure EC2-instance server
-#           command: |
-#             cd .circleci/ansible
-#             cat inventory.txt
-#             ansible-playbook -vvv configure-server.yml -i inventory.txt        
+  configure-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - run:
+          name: Install dependencies
+          command: |
+            yum update -y
+            yum install tar gzip -y
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            amazon-linux-extras install -y epel
+            yum install ansible -y
+      - attach_workspace:
+          at: ~/  
+      - run:
+          name: Configure EC2-instance server
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -vvv configure-server.yml -i inventory.txt        
 
-# # rolls back; should migration fail
-#       - destroy-environment:
-#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+# rolls back; should migration fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
 # yum install -y tar gzip
 #     #       
