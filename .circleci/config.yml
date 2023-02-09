@@ -238,7 +238,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     # environment:
     #   TYPEORM_CONNECTION: $TYPEORM_CONNECTION
     #   TYPEORM_ENTITIES: $TYPEORM_ENTITIES
@@ -255,11 +255,12 @@ jobs:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
       - run:
           name: Install dependencies
-          command: |
-            yum update -y
-            yum install tar gzip -y
-            amazon-linux-extras install -y epel
-            yum install ansible -y
+        - install_dependencies
+          # command: |
+          #   yum update -y
+          #   yum install tar gzip -y
+          #   amazon-linux-extras install -y epel
+          #   yum install ansible -y
       - run:
           name: Configure EC2-instance server
           command: |
