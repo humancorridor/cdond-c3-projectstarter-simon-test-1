@@ -205,7 +205,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.16
+      - image: python:3.8-alpine3.15
     steps:
       - checkout
       - add_ssh_keys:
@@ -213,7 +213,16 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible --no-cache tar gzip curl ansible awscli
+            apk add --update ansible
+            apk add --update  tar gzip
+            apk add --update curl
+            apk add --no-cache \
+            python3 \
+            py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install --no-cache-dir \
+            awscli \
+            && rm -rf /var/cache/apk/*
 
       - attach_workspace:
           at: ~/
@@ -226,16 +235,7 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
 
-# apk add --update ansible
-# apk add --update  tar gzip
-# apk add --update curl
-# apk add --no-cache \
-# python3 \
-# py3-pip \
-# && pip3 install --upgrade pip \
-# && pip3 install --no-cache-dir \
-# awscli \
-# && rm -rf /var/cache/apk/*
+# apk add --update ansible --no-cache tar gzip curl ansible awscli
 
 
 #   configure-infrastructure:
