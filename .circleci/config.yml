@@ -257,6 +257,7 @@ jobs:
           name: Install dependencies
           command: |
             yum update -y
+            yum install -y tar gzip
             amazon-linux-extras install -y epel
             yum install -y ansible 
       - run:
