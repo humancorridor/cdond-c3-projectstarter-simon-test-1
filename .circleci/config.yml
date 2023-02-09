@@ -58,8 +58,8 @@ jobs:
       - image: circleci/node:13.8.0  # Executor
     steps:
       - checkout
-      # - restore_cache:
-      #     keys: [frontend-build]
+      - restore_cache:
+          keys: [frontend-build]
       - run:
           name: Build front-end
           command: |
@@ -86,8 +86,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      # - restore_cache:
-      #     keys: [backend-build]
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Back-end build
           command: |
@@ -239,16 +239,6 @@ jobs:
   configure-infrastructure:
     docker:
       - image: amazon/aws-cli
-    # environment:
-    #   TYPEORM_CONNECTION: $TYPEORM_CONNECTION
-    #   TYPEORM_ENTITIES: $TYPEORM_ENTITIES
-    #   TYPEORM_HOST: $TYPEORM_HOST
-    #   TYPEORM_PORT: $TYPEORM_PORT
-    #   TYPEORM_USERNAME: $TYPEORM_USERNAME
-    #   TYPEORM_PASSWORD: $TYPEORM_PASSW
-    #   TYPEORM_DATABASE: $TYPEORM_DATABASE
-    #   TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
-    #   TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
     steps:
       - checkout
       - add_ssh_keys:
@@ -261,17 +251,18 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install ansible -y
+      - attach_workspace:
+          at: ~/  
       - run:
           name: Configure EC2-instance server
           command: |
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook configure-server.yml -i inventory.txt        
-      - attach_workspace:
-          at: ~/  
+
 # rolls back; should migration fail
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
 # yum install -y tar gzip
 #     #       
