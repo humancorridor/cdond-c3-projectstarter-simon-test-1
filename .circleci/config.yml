@@ -1,17 +1,17 @@
 version: 2.1
 
-commands:
-  install_dependencies:
-    description: Install Ansible and awscli
-    steps:
-      - run:
-          name:
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
-            sudo apt install awscli -y
+# commands:
+#   install_dependencies:
+#     description: Install Ansible and awscli
+#     steps:
+#       - run:
+#           name:
+#           command: |
+#             sudo apt update
+#             sudo apt install software-properties-common -y
+#             sudo add-apt-repository --yes --update ppa:ansible/ansible
+#             sudo apt install ansible -y
+#             sudo apt install awscli -y
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -222,12 +222,12 @@ jobs:
   #           ls -al
   #           cd .circleci/ansible
   #           ls -al
+  #           cat .circleci/ansible/inventory.txt
   #           ansible-playbook configure-server.yml -i inventory.txt 
   #     - destroy-environment:
   #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
-#     cat .circleci/ansible/inventory.txt
-
+#     
   # apk add --update ansible
   # apk add --update  tar gzip
   # apk add --update curl
@@ -263,15 +263,13 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
-            ansible-playbook -vvv configure-server.yml -i inventory.txt        
-
+            ansible-playbook configure-server.yml -i inventory.txt        
 # rolls back; should migration fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
 # yum install -y tar gzip
-#     #       
-
+#     #
 #   run-migrations:
 #     docker:
 #       - image: circleci/node:13.8.0
@@ -283,7 +281,7 @@ jobs:
 #             cd backend
 #             npm install
 #             npm run migrations > migrations_dump.txt
-            
+          
 #       - run:
 #           name: Send migration status to kvdb.io
 #           command: |   
@@ -348,8 +346,8 @@ jobs:
 #           command: |
 #             # your code here
 #       # Here's where you will add some code to rollback on failure      
-
 # copy frontend build to S3 bucket
+  
   deploy-frontend:
     docker:
       - image: python:3.7-alpine3.16
