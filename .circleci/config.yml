@@ -219,7 +219,9 @@ jobs:
       - run:
           name: Configure EC2-instance server
           command: |
+            ls -al
             cd .circleci/ansible
+            ls -al
             ansible-playbook configure-server.yml -i inventory.txt 
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
