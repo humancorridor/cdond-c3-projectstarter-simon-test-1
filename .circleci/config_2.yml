@@ -17,8 +17,7 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       workflow_id:
-        type: string
-        default: ${CIRCLE_WORKFLOW_ID:0:7}  
+        type: string  
     steps:
       - run:
           name: Destroy environments
@@ -172,25 +171,13 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/python:3.10
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-                      name: install tar utility
-                      command: |
-                        yum install -y tar gzip
-      - run:
-          name: install AWS CLI-v2 & other dependencies
+          name: install tar utility
           command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install Ansible 
-          command: |
-            python3 -m pip install --user ansible
-
+            yum install -y tar gzip
       - run:
           name: Ensure backend infrastructure exist
           command: |
@@ -210,12 +197,10 @@ jobs:
       - run:
           name: Add backend ip to ansible inventory
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances \
+            aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople" \
-            --output text)
-            echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
+            --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -731,13 +716,13 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      - deploy-infrastructure:
-            # context:
-            #   - slack
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
+      # - deploy-infrastructure:
+      #       # context:
+      #       #   - slack
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
       # - configure-infrastructure:
       # #       # context:
       # #       #   - slack
