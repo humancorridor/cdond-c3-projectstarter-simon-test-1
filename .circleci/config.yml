@@ -120,6 +120,7 @@ jobs:
           name: Run Unit Test on frontend code
           command: |
             cd frontend
+            npm install
             npm run test                
   
   test-backend:
@@ -133,6 +134,7 @@ jobs:
           name: Run Unit Test on backend code
           command: |
             cd backend
+            npm install
             npm run test          
   
   scan-frontend:
@@ -704,10 +706,10 @@ workflows:
       - build-backend
       #     # context:
       #     #   - slack
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
       # - scan-backend:
       #     requires: [build-backend]
       # - scan-frontend:
