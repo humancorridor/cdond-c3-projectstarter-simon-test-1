@@ -146,10 +146,10 @@ jobs:
           name: Scan frontend packages for security vulnerabilities
           command: |
             cd frontend
-#            npm install
             npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force  
-  
+#            npm install  
+
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -161,10 +161,10 @@ jobs:
           name: Scan backend packages for security vulnerabilities
           command: |
             cd backend
-#            npm install
             npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force 
-  
+#            npm install
+
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
