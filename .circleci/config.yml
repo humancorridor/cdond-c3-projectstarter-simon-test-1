@@ -148,9 +148,10 @@ jobs:
           name: Scan frontend packages for security vulnerabilities
           command: |
             cd frontend
+            npm install
             npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force  
-#            npm install  
+ 
 
   scan-backend:
     docker:
@@ -163,6 +164,7 @@ jobs:
           name: Scan backend packages for security vulnerabilities
           command: |
             cd backend
+            npm install
             npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force 
 #            npm install
@@ -710,10 +712,10 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       # - deploy-infrastructure:
       #       # context:
       #       #   - slack
