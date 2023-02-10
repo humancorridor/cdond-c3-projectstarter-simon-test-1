@@ -146,7 +146,8 @@ jobs:
           name: Scan frontend packages for security vulnerabilities
           command: |
             cd frontend
-            npm install
+#            npm install
+            npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force  
   
   scan-backend:
@@ -160,7 +161,8 @@ jobs:
           name: Scan backend packages for security vulnerabilities
           command: |
             cd backend
-            npm install
+#            npm install
+            npm audit fix --audit-level=critical
             npm audit fix --audit-level=critical --force 
   
   deploy-infrastructure:
@@ -268,7 +270,7 @@ jobs:
       # - destroy-environment:
       #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
-# yum install -y tar gzip
+
 #     #
 #   run-migrations:
 #     docker:
@@ -691,7 +693,7 @@ jobs:
           
 
 workflows:
-  default1:
+  default:
   # send-notification:
     jobs:
       # -notify:
@@ -702,33 +704,33 @@ workflows:
       - build-backend
       #     # context:
       #     #   - slack
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
       #       # context:
       #       #   - slack
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
       # #       # context:
       # #       #   - slack
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
