@@ -237,24 +237,14 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies
-          command: |
-            yum update -y
-            yum install tar gzip -y
-            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
-            amazon-linux-extras install -y epel
-            yum install ansible -y
-      # - attach_workspace:
-      #     at: ~/  
-      - run:
           name: Configure EC2-instance server
           command: |
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -vvv configure-server.yml -i inventory.txt        
 # rolls back; should migration fail
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
 
 
