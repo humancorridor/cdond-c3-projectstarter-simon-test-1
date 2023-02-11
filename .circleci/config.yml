@@ -262,11 +262,22 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/python:3.10
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - install_awscli
-      - install_nodejs
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
+    # docker:
+    #   - image: cimg/python:3.10
+    # steps:
+    #   - checkout
+    #   - install_awscli
+    #   - install_nodejs
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -289,6 +300,82 @@ jobs:
       - revert-migrations:   
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+  
+  deploy-frontend:
+    docker:
+      - image: python:3.7-alpine3.16
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
+      - restore_cache:
+          keys: [frontend-build]
+      # - attach_workspace:
+      #     at: ~/    
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_PUBLIC_IP=$( aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:project,Values=udapeople" \
+            --output text)
+            export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            ls -al
+            npm run build
+            ls -al
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+#           npm install
+# rolls back; should migration fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+
+                   
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible                        
+      - attach_workspace:
+          at: ~/      
+      - restore_cache:
+          keys: [backend-build]    
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm run build
+            cd ..         
+            tar -C backend -czvf artifact.tar.gz .
+            # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            # mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
+            ls -l ~/project/
+            ansible-playbook -i inventory.txt deploy-backend.yml
+#           npm install
+# rolls back; should migration fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 workflows:
   default:
