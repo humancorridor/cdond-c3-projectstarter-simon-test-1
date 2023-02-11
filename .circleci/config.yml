@@ -173,6 +173,7 @@ jobs:
             npm audit fix --audit-level=critical --force  
             npm audit fix --audit-level=critical --force              
             npm audit --audit-level=critical
+            npm audit fix
 
   scan-backend:
     docker:
@@ -189,6 +190,7 @@ jobs:
             npm audit fix --audit-level=critical --force  
             npm audit fix --audit-level=critical --force  
             npm audit --audit-level=critical
+            npm audit fix
 
   deploy-infrastructure:
     docker:
@@ -262,22 +264,23 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/python:3.10
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip -qq awscliv2.zip
-            sudo ./aws/install
+      - install_awscli
+      - install_nodejs
     # docker:
-    #   - image: cimg/python:3.10
+    #   - image: circleci/node:13.8.0
     # steps:
     #   - checkout
-    #   - install_awscli
-    #   - install_nodejs
+    #   - run:
+    #       name: Install dependencies
+    #       command: |
+    #         sudo apt install -y tar gzip curl
+    #         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    #         unzip -qq awscliv2.zip
+    #         sudo ./aws/install
+
       - restore_cache:
           keys: [backend-build]
       - run:
