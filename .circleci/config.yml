@@ -298,27 +298,23 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/python:3.10
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: install AWS CLI-v2 & other dependencies
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install Ansible 
-          command: |
-            python3 -m pip install --user ansible
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
       - run:
+          name: Install dependencies
+          command: |
+            yum update -y
+            yum install tar gzip -y
+            curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+            amazon-linux-extras install -y epel
+            yum install ansible -y
       - attach_workspace:
           at: ~/  
       - run:
-          name: Configure EC2-instance server via Ansible
+          name: Configure EC2-instance server
           command: |
             cd .circleci/ansible
             cat inventory.txt
