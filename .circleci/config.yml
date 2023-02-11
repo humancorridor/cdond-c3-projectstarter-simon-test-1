@@ -303,18 +303,28 @@ jobs:
 
   
   deploy-frontend:
+    # docker:
+    #   - image: cimg/python:3.10
+    # steps:
+    #   - checkout
+    #   - install_awscli
+    #   - install_nodejs
     docker:
       - image: python:3.7-alpine3.16
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-build]  
       - run:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
-      - restore_cache:
-          keys: [frontend-build]
-      # - attach_workspace:
-      #     at: ~/    
+ 
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
       - run:
           name: Get backend url
           command: |
@@ -348,25 +358,34 @@ jobs:
       - image: python:3.7-alpine3.16
     steps:
       - checkout
+      # - install_ansible
+      # - install_awscli
+      # - install_nodejs
+      - restore_cache:
+          keys: [backend-build] 
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - attach_workspace:
+          at: ~/   
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible                        
-      - attach_workspace:
-          at: ~/      
-      - restore_cache:
-          keys: [backend-build]    
+            apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible               
       - run:
-          name: Deploy backend
+          name: Package for backend
           command: |
             cd backend
-            npm run build
-            cd ..         
+            npm run build       
             tar -C backend -czvf artifact.tar.gz .
-            # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            # mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files
+      - run:
+          name: Deploy backend
+          command: |            
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
             ls -l ~/project/
