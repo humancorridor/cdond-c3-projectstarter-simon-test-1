@@ -296,6 +296,39 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
+  configure-infrastructure:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - run:
+          name: install AWS CLI-v2 & other dependencies
+          command: |
+            sudo apt install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: install Ansible 
+          command: |
+            python3 -m pip install --user ansible
+      - add_ssh_keys:
+          fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - run:
+      - attach_workspace:
+          at: ~/  
+      - run:
+          name: Configure EC2-instance server via Ansible
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -vvv configure-server.yml -i inventory.txt        
+# rolls back; should migration fail
+      # - destroy-environment:
+      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+
+
+
 workflows:
   default:
   # send-notification:
@@ -323,10 +356,10 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      # #       # context:
-      # #       #   - slack
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+      #       # context:
+      #       #   - slack
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
