@@ -1,94 +1,105 @@
 version: 2.1
 
 commands:
-  install_dependencies:
-    description: Install Ansible and awscli
-    steps:
-      - run:
-          name:
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
-            sudo apt install awscli -y
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
-      - run:
-          name: Install_awscli
-          command: |
-            sudo apt install -y tar gzip curl
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: install_ansible 
-          command: |
-            python3 -m pip install --user ansible
+  # install_dependencies:
+  #   description: Install Ansible and awscli
+  #   steps:
+  #     - run:
+  #         name:
+  #         command: |
+  #           sudo apt update
+  #           sudo apt install software-properties-common -y
+  #           sudo add-apt-repository --yes --update ppa:ansible/ansible
+  #           sudo apt install ansible -y
+  #           sudo apt install awscli -y
+    install_ansible:
+      description: Install Ansible and awscli
+      steps:
+        - run:
+            name: Install Ansible
+            command: |
+              python3 -m pip install --user ansible
+
+    install_awscli:
+      description: Install AWS CLIv2
+      steps:
+        - run:
+            name: Install_awscli
+            command: |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
+      # - run:
+      #     name: Install_awscli
+      #     command: |
+      #       sudo apt install -y tar gzip curl
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      # - run:
+      #     name: install_ansible 
+      #     command: |
+      #       python3 -m pip install --user ansible
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -298,11 +309,15 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/python:3.10
     steps:
       - checkout
+      - install_ansible
+      - install_awscli
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -311,8 +326,8 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_13.x | bash -
             amazon-linux-extras install -y epel
             yum install ansible -y
-      - attach_workspace:
-          at: ~/  
+      # - attach_workspace:
+      #     at: ~/  
       - run:
           name: Configure EC2-instance server
           command: |
