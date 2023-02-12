@@ -11,11 +11,11 @@
     autoremove: yes
 
 - name: install dependences  # sudo apt install nodejs npm
-  become: yes
+  become: true
   apt:
     name: ['nodejs', 'npm'] 
     state: latest
-    update_cache: yes
+    update_cache: true
 
 - name: install pm2
   become: yes
