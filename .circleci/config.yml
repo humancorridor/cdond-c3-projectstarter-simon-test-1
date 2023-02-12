@@ -322,6 +322,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
+            npm run build
       - run:
           name: Get backend url
           command: |
@@ -336,11 +337,10 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            cd frontend
-           
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            ls -al
 #           npm install
 # rolls back; should migration fail
       - destroy-environment:
@@ -377,7 +377,7 @@ jobs:
           name: Package for backend
           command: |
             cd backend
-
+            npm run build
             tar -C backend -czvf artifact.tar.gz .
             # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             # mv artifact.tar.gz .circleci/ansible/roles/deploy/files
@@ -387,7 +387,7 @@ jobs:
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
-
+            cd ..
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
             ls -l ~/project/
