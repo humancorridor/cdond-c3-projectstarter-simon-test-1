@@ -208,7 +208,6 @@ jobs:
           name: install Ansible 
           command: |
             python3 -m pip install --user ansible
-
       - run:
           name: Ensure backend infrastructure exist
           command: |
@@ -280,7 +279,6 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -qq awscliv2.zip
             sudo ./aws/install
-
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -301,20 +299,19 @@ jobs:
       - revert-migrations:   
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  
   deploy-frontend:
-    # docker:
-    #   - image: cimg/python:3.10
     docker:
-      - image: python:3.7-alpine3.16
+      - image: cimg/python:3.10
+    # docker:
+      # - image: python:3.7-alpine3.16
     steps:
       - checkout
-      # - install_awscli
-      # - install_nodejs
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update --no-cache tar gzip curl nodejs npm aws-cli  
+      - install_awscli
+      - install_nodejs
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       apk add --update --no-cache tar gzip curl nodejs npm aws-cli  
       - restore_cache:
           keys: [frontend-build] 
       - run:
@@ -339,18 +336,13 @@ jobs:
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-#           npm install
-
 # rolls back; should migration fail
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-      # - revert-migrations:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
-            # npm install
-            # npm run build
-            # npm audit fix
-            # npm audit fix 
+
 
   deploy-backend:
     # docker:
