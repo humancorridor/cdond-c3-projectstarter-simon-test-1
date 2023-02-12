@@ -442,10 +442,6 @@ jobs:
 
 
 
-
-
-
-
 workflows:
   default:
   # send-notification:
@@ -482,7 +478,7 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [run-migration]
+          requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
