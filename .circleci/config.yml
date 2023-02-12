@@ -338,12 +338,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
-            ls -al
-            npm install
-            npm run build
-            npm audit fix --force
-            npm audit fix
-            npm audit fix            
+           
             ls -al
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
@@ -354,7 +349,11 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
-                   
+            # npm install
+            # npm run build
+            # npm audit fix
+            # npm audit fix 
+
   deploy-backend:
     docker:
       - image: cimg/python:3.10  
@@ -379,11 +378,7 @@ jobs:
           name: Package for backend
           command: |
             cd backend
-            npm install
-            npm run build 
-            npm audit fix --force  
-            npm audit fix    
-            npm audit fix 
+
             tar -C backend -czvf artifact.tar.gz .
             # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             # mv artifact.tar.gz .circleci/ansible/roles/deploy/files
@@ -404,6 +399,12 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+            
+            # npm install
+            # npm run build 
+            # npm audit fix --force  
+            # npm audit fix    
+            # npm audit fix 
 
 workflows:
   default:
