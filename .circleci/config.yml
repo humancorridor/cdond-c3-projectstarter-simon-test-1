@@ -322,7 +322,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run build
       - run:
           name: Get backend url
           command: |
@@ -333,13 +332,13 @@ jobs:
             export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
-            # cat frontend/.env
+            cat frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
             ls -al
-            cd ..
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            npm run build
+          # tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             ls -al
 #           npm install
@@ -406,6 +405,113 @@ jobs:
             # npm audit fix --force  
             # npm audit fix    
             # npm audit fix 
+
+
+#   deploy-frontend:
+#     docker:
+#       - image: cimg/python:3.10
+#     # docker:
+#     #   - image: python:3.7-alpine3.16
+#     steps:
+#       - checkout
+#       - install_awscli
+#       - install_nodejs
+#       - restore_cache:
+#           keys: [frontend-build]  
+#       # - run:
+#       #     name: Install dependencies
+#       #     command: |
+#       #       apk add --update --no-cache tar gzip curl nodejs npm aws-cli      
+#       - run:
+#           name: Deploy frontend objects
+#           command: |
+#             cd frontend
+#             npm install
+#             npm run build
+#       - run:
+#           name: Get backend url
+#           command: |
+#             BACKEND_PUBLIC_IP=$( aws ec2 describe-instances \
+#             --query 'Reservations[*].Instances[*].PublicIpAddress' \
+#             --filters "Name=tag:project,Values=udapeople" \
+#             --output text)
+#             export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
+#             echo "API_URL = ${API_URL}"
+#             echo API_URL="http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+#             # cat frontend/.env
+#       - run:
+#           name: Deploy frontend objects
+#           command: |
+#             ls -al
+#             cd ..
+#             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+#             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+#             ls -al
+# #           npm install
+# # rolls back; should migration fail
+#       - destroy-environment:
+#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+#       - revert-migrations:
+#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+
+#             # npm install
+#             # npm run build
+#             # npm audit fix
+#             # npm audit fix 
+
+#   deploy-backend:
+#     docker:
+#       - image: cimg/python:3.10  
+#     # docker:
+#     #   - image: python:3.7-alpine3.16
+#     steps:
+#       - checkout
+#       - install_ansible
+#       - install_awscli
+#       - install_nodejs
+#       - restore_cache:
+#           keys: [backend-build] 
+#       - add_ssh_keys:
+#           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+#       - attach_workspace:
+#           at: ~/   
+#       # - run:
+#       #     name: Install dependencies
+#       #     command: |
+#       #       apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible               
+#       - run:
+#           name: Package for backend
+#           command: |
+#             cd backend
+#             npm install
+#             npm run build
+#             tar -C backend -czvf artifact.tar.gz .
+#             # mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+#             # mv artifact.tar.gz .circleci/ansible/roles/deploy/files
+#       - run:
+#           name: Deploy backend
+#           command: |            
+#             export TYPEORM_MIGRATIONS_DIR=./migrations
+#             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+#             export TYPEORM_MIGRATIONS=./migrations/*.ts
+#             cd ..
+#             cd .circleci/ansible
+#             echo "Contents  of the inventory.txt file is -------$(cat inventory.txt)"
+#             ls -l ~/project/
+#             ansible-playbook -i inventory.txt deploy-backend.yml
+# #           npm install
+# # rolls back; should migration fail
+#       - destroy-environment:
+#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+#       - revert-migrations:
+#           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+            
+#             # npm install
+#             # npm run build 
+#             # npm audit fix --force  
+#             # npm audit fix    
+#             # npm audit fix 
+
 
 workflows:
   default:
