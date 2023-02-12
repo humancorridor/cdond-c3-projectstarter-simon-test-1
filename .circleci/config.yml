@@ -322,7 +322,6 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
-            npm install
       - run:
           name: Get backend url
           command: |
@@ -442,7 +441,7 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [run-migrations]
+          requires: [deploy-frontend]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
