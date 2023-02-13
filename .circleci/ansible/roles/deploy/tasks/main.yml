@@ -42,10 +42,10 @@
   become: yes
   shell: |
     pm2 delete all
-  # pm2 start main.js
     pm2 start npm -- start
 
 
+#   pm2 start main.js
 # - name: extract artifact
 #   become: yes
 #   unarchive:
