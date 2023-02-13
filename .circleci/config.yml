@@ -254,7 +254,6 @@ jobs:
       - run:
           name: Configure EC2-instance server
           command: |
-            cat inventory.txt
             cd .circleci/ansible
             ansible-playbook configure-server.yml -i inventory.txt        
 # rolls back; should migration fail
