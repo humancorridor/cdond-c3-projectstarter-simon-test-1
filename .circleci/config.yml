@@ -540,7 +540,7 @@ jobs:
       #       # context:
       #       #   - slack
           requires: [deploy-infrastructure]
-            yum install -y ansible
+            # yum install -y ansible
       - attach_workspace:
           at: ~/
       - run:
