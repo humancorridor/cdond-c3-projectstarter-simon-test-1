@@ -261,8 +261,8 @@ jobs:
       - install_nodejs
     # docker:
     #   - image: circleci/node:13.8.0
-    steps:
-      - checkout
+    # steps:
+    #   - checkout
       # - run:
       #     name: Install dependencies
       #     command: |
