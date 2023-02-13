@@ -523,44 +523,44 @@ jobs:
             cat inventory.txt
             ansible-playbook  node-exporter-config.yml -i inventory.txt
 
-  deploy-prometheus-server:
-    docker:
-      - image: amazon/aws-cli
-    environment:
+  # deploy-prometheus-server:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   environment:
 
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
-      - run:
-          name: Install dependencies
-          command: |
-            yum update -y
-      - configure-infrastructure:
-      #       # context:
-      #       #   - slack
-          requires: [deploy-infrastructure]
-            # yum install -y ansible
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Spin up EC2 server for prometheus
-      - configure-infrastructure:
-      #       # context:
-      #       #   - slack
-          requires: [deploy-infrastructure]
-              --tags project=prometheus \
-              --stack-name udapeople-prometheus-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: Append IP to inventory file
-      - configure-infrastructure:
-      #       # context:
-      #       #   - slack
-          requires: [deploy-infrastructure]
-            cd .circleci/ansible
-            cat inventory.txt
-            ansible-playbook -i inventory.txt prometheus-alertmanager-config.yml  
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["75:11:74:14:43:18:dc:4d:78:35:20:a3:54:bc:2a:ca"]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           yum update -y
+  #     - configure-infrastructure:
+  #     #       # context:
+  #     #       #   - slack
+  #         requires: [deploy-infrastructure]
+  #           # yum install -y ansible
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: Spin up EC2 server for prometheus
+  #     - configure-infrastructure:
+  #     #       # context:
+  #     #       #   - slack
+  #         requires: [deploy-infrastructure]
+  #             --tags project=prometheus \
+  #             --stack-name udapeople-prometheus-${CIRCLE_WORKFLOW_ID:0:7} \
+  #             --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+  #     - run:
+  #         name: Append IP to inventory file
+  #     - configure-infrastructure:
+  #     #       # context:
+  #     #       #   - slack
+  #         requires: [deploy-infrastructure]
+  #           cd .circleci/ansible
+  #           cat inventory.txt
+  #           ansible-playbook -i inventory.txt prometheus-alertmanager-config.yml  
           
 
 
