@@ -25,7 +25,7 @@
     sudo apt install nodejs -y
 
 - name: install pm2
-  become: yes
+  become: true
   npm:
     name: pm2
     global: yes
@@ -33,13 +33,13 @@
     production: yes
 
 - name: extract artifact
-  become: yes
+  become: true
   unarchive:
     src: files/artifact.tar.gz 
     dest: .
 
 - name: start server with pm2
-  become: yes
+  become: true
   shell: |
     pm2 delete all
     pm2 start npm -- start
