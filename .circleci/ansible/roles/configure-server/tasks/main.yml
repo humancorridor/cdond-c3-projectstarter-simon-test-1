@@ -14,7 +14,6 @@
 - name: "Node.js 13 installation"
   become: true
   shell: |
-# Install Node.js LTS version as our base Node.js version
     curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 # Use n version manager (NVM) to switch to Nodejs v13.8.0
 # sudo npm install -g n
