@@ -18,17 +18,16 @@
 #     state: latest
 #     update_cache: yes
 
-
 - name: "Node.js 13 installation and npm"
   shell: |
-# Install Node.js LTS version as our base Node.js version
-# curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-    sudo apt install -y nodejs
+    sudo apt-get install -y nodejs
     sudo apt install -y npm
 
-    # Use n version manager (NVM) to switch to Nodejs v13.8.0
-    # sudo npm install -g n
-   # sudo n 13.8.0
+# Install Node.js LTS version as our base Node.js version
+# curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+# Use n version manager (NVM) to switch to Nodejs v13.8.0
+# sudo npm install -g n
+# sudo n 13.8.0
 
 - name: install pm2  # sudo npm install pm2 -g
   become: yes
