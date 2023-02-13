@@ -1,31 +1,16 @@
 ---
 
-- name: Extract artifact.tar.gz into EC2 server 
-  ansible.builtin.unarchive:
-    src: ~/project/artifact.tar.gz 
-    dest: ~/
-  
-- name: npm install all
-  command: npm install
+- name: update and upgrade packages  # sudo apt upgrade
+  become: yes
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
 
-- name: start server with pm2
-  command: pm2 start npm -- start
-
-- name: delay process by 60 seconds
-  ansible.builtin.pause:
-    minutes: 1
-
-
-# - name: update and upgrade packages  # sudo apt upgrade
-#   become: yes
-#   apt:
-#     upgrade: yes
-#     update_cache: yes
-#     cache_valid_time: 86400
-# - name: remove dependences that are not needed  # sudo apt autoremove
-#   become: yes
-#   apt:
-#     autoremove: yes
+- name: remove dependences that are not needed  # sudo apt autoremove
+  become: yes
+  apt:
+    autoremove: yes
 
 # # - name: install dependences  # sudo apt install nodejs npm
 # #   become: true
@@ -34,32 +19,38 @@
 # #     state: latest
 # #     update_cache: yes
 
-# - name: install dependences  # sudo apt install npm and nodejs
-#   shell: |
-#     sudo apt install npm -y
-#     sudo apt install nodejs -y
+- name: install dependences  # sudo apt install npm and nodejs
+  shell: |
+    sudo apt install npm -y
+    sudo apt install nodejs -y
 
-# - name: install pm2
-#   become: yes
-#   npm:
-#     name: pm2
-#     global: yes
-#     state: latest
-#     production: yes
+- name: install pm2
+  become: yes
+  npm:
+    name: pm2
+    global: yes
+    state: latest
+    production: yes
+
+- name: extract artifact
+  become: yes
+  unarchive:
+    src: files/artifact.tar.gz 
+    dest: .
+
+- name: start server with pm2
+  become: yes
+  shell: |
+    pm2 delete all
+  # pm2 start main.js
+    pm2 start npm -- start
+
 
 # - name: extract artifact
 #   become: yes
 #   unarchive:
 #     src: ~/project/artifact.tar.gz 
 #     dest: ~/
-
-# - name: start server with pm2
-#   become: yes
-#   shell:
-#     npm install
-#     pm2 stop default
-#     pm2 start main.js
-#     pm2 start npm -- start
 
 # - name: "Creates backend app directory"
 #   file:
