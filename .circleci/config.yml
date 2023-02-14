@@ -392,7 +392,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:18.4.0
         # docker:
     #   - image: python:3.7-alpine3.16 
     steps:
@@ -422,7 +422,8 @@ jobs:
             echo API_URL="http://${BACKEND_IP}:3030"
             if [[ 'ok' =~ $(curl -s --connect-timeout 5
             http://{BACKEND_IP}:3030/api/status | grep -o ok) ]];then return 0 else 
-            return 1;f1
+            return 1;
+            f1
 
       - run:
           name: Frontend smoke test.
