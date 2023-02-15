@@ -8,11 +8,11 @@
 - name: "Node.js 16.x.x installation"
   become: true
   shell: |
-    curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt-get install -y nodejs
-#   Use n version manager (NVM) to switch to Nodejs v13.8.0
-    npm install -g n
-    n 13.8.0   
+# #   Use n version manager (NVM) to switch to Nodejs v13.8.0
+#     npm install -g n
+#     n 13.8.0   
 
 - name: install pm2  # sudo npm install pm2 -g
   become: true
