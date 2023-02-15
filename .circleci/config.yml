@@ -602,7 +602,7 @@ workflows:
       # - deploy-frontend:
           # requires: [run-migrations]
       - deploy-backend:
-          requires: [configure-infrastruture]
+          requires: [configure-infrastructure]
       - smoke-test:
           requires: [deploy-backend]
       - cloudfront-update:
