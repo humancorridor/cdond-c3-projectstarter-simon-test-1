@@ -7,8 +7,11 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            python3 -m pip install --user ansible
+            sudo apt-get update
+            sudo apt install ansible -y
+            sudo apt install awscli -y
 
+#     python3 -m pip install --user ansible
   install_awscli:
     description: Install AWS CLIv2
     steps:
