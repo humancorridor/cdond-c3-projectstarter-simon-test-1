@@ -33,6 +33,17 @@ commands:
             sudo npm install --global n
             sudo n 13.8.0
 
+# Install_Ansible:
+#   description: Install Ansible v2
+#   step:
+#     - run:
+#         name: Install Ansible v2
+#         command: |
+#           sudo apt update
+#           sudo apt install software-properties-common
+#           sudo apt-add-apt-repository --yes --update ppa:ansible/ansible
+#           sudo apt install ansible
+
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -69,16 +80,7 @@ commands:
               npm run build
               npm run migrations:revert
             fi
-# Install_Ansible:
-#   description: Install Ansible v2
-#   step:
-#     - run:
-#         name: Install Ansible v2
-#         command: |
-#           sudo apt update
-#           sudo apt install software-properties-common
-#           sudo apt-add-apt-repository --yes --update ppa:ansible/ansible
-#           sudo apt install ansible
+
 orbs: 
   slack: circleci/slack@4.12.1
             
@@ -368,7 +370,6 @@ jobs:
       #     name: Install dependencies
       #     command: |
       #       apk add --update --no-cache tar gzip curl nodejs npm aws-cli ansible     
-
       - attach_workspace:
           at: ~/   
       - restore_cache:
@@ -381,6 +382,7 @@ jobs:
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
+            ls -al
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             cp artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
@@ -395,9 +397,6 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-# export TYPEORM_MIGRATIONS_DIR=./migrations
-# export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-# export TYPEORM_MIGRATIONS=./migrations/*.ts
 
   smoke-test:
     docker:
@@ -457,10 +456,10 @@ jobs:
             else
                 return 1
             fi
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-      # - revert-migrations:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}        
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}        
 
 
   cloudfront-update:

@@ -1,48 +1,61 @@
 ---
-
-- name: update and upgrade packages  # sudo apt upgrade
-  become: true
+- name: Install Python
   apt:
-    upgrade: yes
-    update_cache: yes
-    cache_valid_time: 86400
-
-- name: remove dependences that are not needed  # sudo apt autoremove
-  become: yes
-  apt:
-    autoremove: yes
-
-# - name: "Node.js 16.x.x installation"
-#   become: true
-#   shell: |
-#     curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-#     sudo apt-get install -y nodejs
-
-
-- name: "Node.js 13.x.x installation"
-  become: true
-  shell: |
-    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-
-
-- name: "Install Node.js 13" # sudo apt install Node.js v13
-  become: true
-  apt:
-    name: ["nodejs"]
+    name: python
     state: latest
+    
+- name: "nodesource installation"
+  shell: curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+- name: "install nodejs"
+  apt:
     update_cache: yes
+    name: nodejs
+    state: latest
 
-
-- name: install pm2  # sudo npm install pm2 -g
-  become: yes
+- name: "install pm2"
   npm:
     name: pm2
     global: yes
 
+# - name: update and upgrade packages  # sudo apt upgrade
+#   become: true
+#   apt:
+#     upgrade: yes
+#     update_cache: yes
+#     cache_valid_time: 86400
 
-    # state: latest
-    # production: yes
+# - name: remove dependences that are not needed  # sudo apt autoremove
+#   become: yes
+#   apt:
+#     autoremove: yes
+
+# # - name: "Node.js 16.x.x installation"
+# #   become: true
+# #   shell: |
+# #     curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+# #     sudo apt-get install -y nodejs
+
+# - name: "Node.js 13.x.x installation"
+#   become: true
+#   shell: |
+#     curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+# #  sudo apt-get install -y nodejs
+
+# - name: "Install Node.js 13" # sudo apt install Node.js v13
+#   become: true
+#   apt:
+#     name: ["nodejs"]
+#     state: latest
+#     update_cache: yes
+
+# - name: install pm2  # sudo npm install pm2 -g
+#   become: true
+#   npm:
+#     name: pm2
+#     global: yes
+#     state: latest
+#     production: yes
 
 # - name: "move env variables to /etc/profile.d/"
 #   become: true
