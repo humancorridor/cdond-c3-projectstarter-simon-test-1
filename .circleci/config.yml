@@ -7,9 +7,9 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            apt-get update -y
-            apt install ansible -y
-          # python3 -m pip install --user ansible
+# sudo apt-get update -y
+# sudo apt install ansible -y
+            python3 -m pip install --user ansible
 
   install_awscli:
     description: Install AWS CLIv2
@@ -17,10 +17,10 @@ commands:
       - run:
           name: Install AWS CLI
           command: |
-            apt install awscli -y
-          # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          # unzip awscliv2.zip
-          # sudo ./aws/install
+# apt install awscli -y
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
   install_nodejs:
     description: Install Node.js # 16.9.0
@@ -244,13 +244,20 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/python:3.10
+      # - image: cimg/python:3.10
+      - image: python:3.9.16
     steps:
       - checkout
-      - install_ansible
-      - install_awscli
+      # - install_ansible
+      # - install_awscli
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
+      - run:
+          name: Install dependencies
+          command: |
+              apt-get update
+              apt install ansible -y
+              apt install awscli -y 
       - attach_workspace:
           at: ~/
       - run:
