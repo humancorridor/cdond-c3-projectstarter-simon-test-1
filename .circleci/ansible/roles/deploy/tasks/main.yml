@@ -5,8 +5,8 @@
     src: ~/project/artifact.tar.gz 
     dest: ~/
   
-- name: npm install all
-  command: npm install
+# - name: npm install all
+#   command: npm install
 
 - name: start server with pm2
   command: pm2 start npm -- start
