@@ -22,7 +22,7 @@
 - name: "move environment variables to /etc/profile.d/"
   become: true
   copy:
-    src: myenv.sh
+    src: files/myenv.sh
     dest: ~/etc/profile.d/
 
 # - name: "nodesource installation"
