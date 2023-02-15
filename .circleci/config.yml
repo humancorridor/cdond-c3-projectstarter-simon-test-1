@@ -383,8 +383,8 @@ jobs:
             cd ..
             tar -C backend -czvf artifact.tar.gz .
             ls -al
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/files
+# mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+# cp artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |            
@@ -430,15 +430,6 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030"
-
-            if [[ 'ok' =~ $(curl -s --connect-timeout 5
-            http://{BACKEND_IP}:3030/api/status | grep -o ok) ]];
-            then 
-                return 0 
-            else 
-                return 1;
-            f1
-
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
