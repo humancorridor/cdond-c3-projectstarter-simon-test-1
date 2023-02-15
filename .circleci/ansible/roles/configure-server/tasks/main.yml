@@ -4,20 +4,37 @@
     name: python3
     state: latest
     update_cache: yes
-    
-- name: "nodesource installation"
-  shell: curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
 
-- name: "install nodejs"
-  apt:
-    update_cache: yes
-    name: nodejs
-    state: latest
+- name: "Node.js 16.x.x installation"
+  become: true
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+ #  Use n version manager (NVM) to switch to Nodejs v13.8.0
+    sudo npm install -g n
+    sudo n 13.8.0   
 
-- name: "install pm2"
+- name: install pm2  # sudo npm install pm2 -g
+  become: true
   npm:
     name: pm2
     global: yes
+    state: latest
+    production: yes
+
+# - name: "nodesource installation"
+#   shell: curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+# - name: "install nodejs"
+#   apt:
+#     update_cache: yes
+#     name: nodejs
+#     state: latest
+
+# - name: "install pm2"
+#   npm:
+#     name: pm2
+#     global: yes
 
 # - name: update and upgrade packages  # sudo apt upgrade
 #   become: true
@@ -30,15 +47,6 @@
 #   become: yes
 #   apt:
 #     autoremove: yes
-
-# - name: "Node.js 16.x.x installation"
-#   become: true
-#   shell: |
-#     curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-#     sudo apt-get install -y nodejs
-#  #  Use n version manager (NVM) to switch to Nodejs v13.8.0
-#     sudo npm install -g n
-#     sudo n 13.8.0
 
 # - name: "Node.js 13.x.x installation"
 #   become: true
@@ -53,17 +61,4 @@
 #     state: latest
 #     update_cache: yes
 
-# - name: install pm2  # sudo npm install pm2 -g
-#   become: true
-#   npm:
-#     name: pm2
-#     global: yes
-#     state: latest
-#     production: yes
-
-# - name: "move env variables to /etc/profile.d/"
-#   become: true
-#   copy:
-#     src: myenv.sh
-#     dest: /etc/profile.d/
 
