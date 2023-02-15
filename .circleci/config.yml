@@ -601,10 +601,10 @@ workflows:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
           # requires: [run-migrations]
-      - deploy-backend
-          # requires: [run-migrations]
+      - deploy-backend:
+          requires: [configure-infrastruture]
       - smoke-test:
-          requires: [deploy-backend, configure-infrastructure]
+          requires: [deploy-backend]
       - cloudfront-update:
           requires: [smoke-test]
       # - cleanup:
