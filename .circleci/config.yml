@@ -241,20 +241,20 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # - image: cimg/python:3.10
-      - image: python:3.9.16
+      - image: cimg/python:3.10
+      # - image: python:3.9.16
     steps:
       - checkout
-      # - install_ansible
-      # - install_awscli
+      - install_ansible
+      - install_awscli
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-      - run:
-          name: Install dependencies
-          command: |
-              apt-get update
-              apt install ansible -y
-              apt install awscli -y 
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #         apt-get update
+      #         apt install ansible -y
+      #         apt install awscli -y 
       - attach_workspace:
           at: ~/
       - run:
@@ -272,7 +272,7 @@ jobs:
     steps:
       - checkout
       - install_awscli
-     # - install_nodejs
+      - install_nodejs
     # docker:
     #   - image: circleci/node:13.8.0
     # steps:
