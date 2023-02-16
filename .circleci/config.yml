@@ -93,7 +93,7 @@ jobs:
           name: Build front-end
           command: |
             # Your code here
-            cd frontend
+            # cd frontend
             ls -al
             npm run build
       - save_cache:
@@ -117,7 +117,7 @@ jobs:
           name: Build backend
           command: |
             # Your code here
-            cd backend
+            # cd backend
             npm run build
       - save_cache:
           paths: [backend/node_modules]
