@@ -543,7 +543,7 @@ jobs:
             fi
 
 workflows:
-  default:
+  default3:
     jobs:
       - build-frontend
       - build-backend
