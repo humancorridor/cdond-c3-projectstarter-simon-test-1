@@ -75,6 +75,9 @@ commands:
               npm run migration:revert
             fi
 
+orbs: 
+  slack: circleci/slack@4.12.1
+
 jobs:
   build-frontend:
     docker:
