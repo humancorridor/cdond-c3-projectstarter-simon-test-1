@@ -83,18 +83,19 @@ jobs:
       - restore_cache:
           keys:
             - frontend-deps-{{ checksum "frontend/package-lock.json" }}
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            ls -al
-            npm install
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       cd frontend
+      #       ls -al
+      #       npm install
       - run:
           name: Build front-end
           command: |
             # Your code here
-            # cd frontend
+            cd frontend
             ls -al
+            npm install
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -108,16 +109,17 @@ jobs:
       - restore_cache:
           keys:
             - backend-deps-{{ checksum "backend/package-lock.json" }}
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       cd backend
+      #       npm install
       - run:
           name: Build backend
           command: |
             # Your code here
-            # cd backend
+            cd backend
+            npm install            
             npm run build
       - save_cache:
           paths: [backend/node_modules]
