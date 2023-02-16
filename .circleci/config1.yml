@@ -23,15 +23,29 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
+  # install_nodejs:
+  #   description: Install Node.js # 16.9.0
+  #   steps:
+  #     - run:
+  #         name: Install Node.js # 16.9.0
+  #         command: |
+  #           # Install Node.js 16.9.0 version as our base Node.js version
+  #           curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+  #           sudo apt-get install -y nodejs
+
   install_nodejs:
-    description: Install Node.js # 16.9.0
+    description: Install Node.js 13.8.0
     steps:
       - run:
-          name: Install Node.js # 16.9.0
+          name: Install Node.js 13.8.0
           command: |
-            # Install Node.js 16.9.0 version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-            sudo apt-get install -y nodejs
+            # Install Node.js LTS version as our base Node.js version
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+
+            # Use n version manager to use Node.js v13.8.0
+            sudo npm install --global n
+            sudo n 13.8.0
 
 # Install_Ansible:
 #   description: Install Ansible v2
@@ -273,7 +287,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/node:18.4.0
+      - image: cimg/python:3.10
     steps:
       - checkout
       - install_awscli
