@@ -426,15 +426,16 @@ jobs:
   cloudfront-update:
     docker:
       # - image: cimg/base:stable
-      - image: amazon/aws-cli      
+      - image: circleci/node:13.8.0      
     steps:
       - checkout
-      # - install_awscli
+      - install_awscli
       # - install_nodejs
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       yum install -y npm nodejs
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update -y
+            sudo apt install -y npm
       - run:
           name: Save Old Workflow ID to kvdb.io
           command: |
