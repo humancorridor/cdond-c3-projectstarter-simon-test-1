@@ -387,7 +387,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/base:stable
+      # - image: cimg/base:stable
     steps:
       - checkout
       - install_awscli
@@ -425,8 +425,9 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: cimg/base:stable
-      # - image: circleci/node:13.8.0      
+      # - image: cimg/base:stable
+      # - image: circleci/node:13.8.0 
+      - imagge: alpine:latest   
     steps:
       - checkout
       - install_awscli
@@ -459,7 +460,7 @@ jobs:
 
   cleanup:
     docker:                                                                           
-      - image: cimg/base:stable
+      # - image: cimg/base:stable
     steps:
       - checkout
       - install_awscli
