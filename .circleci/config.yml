@@ -435,7 +435,6 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update -y
-            sudo apt install -y npm
       - run:
           name: Save Old Workflow ID to kvdb.io
           command: |
