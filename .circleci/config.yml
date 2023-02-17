@@ -425,8 +425,8 @@ jobs:
 
   cloudfront-update:
     docker:
-      # - image: cimg/base:stable
-      - image: circleci/node:13.8.0      
+      - image: cimg/base:stable
+      # - image: circleci/node:13.8.0      
     steps:
       - checkout
       - install_awscli
