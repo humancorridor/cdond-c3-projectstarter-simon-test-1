@@ -427,7 +427,7 @@ jobs:
     docker:
       # - image: cimg/base:stable
       # - image: circleci/node:13.8.0 
-      - imagge: alpine:latest   
+      - image: alpine:latest   
     steps:
       - checkout
       - install_awscli
