@@ -460,7 +460,7 @@ jobs:
 
   cleanup:
     docker:                                                                           
-      # - image: cimg/base:stable
+      - image: cimg/base:stable
     steps:
       - checkout
       - install_awscli
