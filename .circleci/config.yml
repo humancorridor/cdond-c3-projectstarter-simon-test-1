@@ -447,7 +447,6 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            cd files
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name udapeople-cloudfront \
