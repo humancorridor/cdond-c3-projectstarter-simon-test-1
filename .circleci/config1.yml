@@ -324,15 +324,6 @@ jobs:
       - revert-migrations:   
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-# npm audit fix --audit-level=critical --force              
-# npm audit --audit-level=critical
-# npm audit fix
-# npm run build
-#           cat migrations_dump.txt   
-# npm cache clean --force
-# rm -rf node_modules
-# rm package-lock.json 
-
   deploy-frontend:
     docker:
       - image: cimg/python:3.10
@@ -402,8 +393,8 @@ jobs:
             cd ..
             tar -C backend -czvf artifact.tar.gz .
             ls -al
-# mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-# cp artifact.tar.gz .circleci/ansible/roles/deploy/files
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |            
@@ -416,10 +407,8 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-
   smoke-test:
     # docker:
-  
     docker:
       - image: cimg/node:18.4.0
         # docker:
@@ -463,7 +452,7 @@ jobs:
             echo ${URL} 
             if curl ${URL} | grep "Welcome"
             then
-                exit 0
+                exit 1
             else
                 exit 1
             fi
