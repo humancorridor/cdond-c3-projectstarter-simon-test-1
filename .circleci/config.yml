@@ -36,7 +36,7 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      workflow_id:
+      Workflow_id:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
@@ -44,20 +44,20 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            echo Destroying environment <<parameters.workflow_id>>
+            echo Destroying environment <<parameters.Workflow_id>>
             # Empty frontend bucket
-            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
+            aws s3 rm s3://udapeople-<<parameters.Workflow_id>> --recursive
 
             # Delete frontend stack
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_id >>
 
             # Delete backend stack
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_id >>
 
   revert-migrations:
-    description: Revert the last migration, if any were executed during the current workflow
+    description: Revert the last migration, if any were executed during the current Workflow
     parameters:
-      workflow_id:
+      Workflow_id:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
@@ -381,9 +381,9 @@ jobs:
             ansible-playbook -vvv -i inventory.txt deploy-backend.yml
 # rolls back; should migration fail
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -419,9 +419,9 @@ jobs:
             fi
 # rolls back; should migration fail
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
@@ -436,8 +436,8 @@ jobs:
             export OLD_WORKFLOW_ID=$(aws cloudformation \
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
-            echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
-            curl https://kvdb.io/${DqZVv2PAwyBRsc3N93494u}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
+            echo "Old Workflow ID: $OLD_WORKFLOW_ID"
+            curl https://kvdb.io/${DqZVv2PAwyBRsc3N93494u}/old_Workflow_id -d "${OLD_WORKFLOW_ID}"
       - run:
           name: Update cloudfront distribution
           command: |
@@ -447,9 +447,9 @@ jobs:
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
 # rolls back; should migration fail
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          Workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:                                                                           
@@ -466,7 +466,7 @@ jobs:
                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Stack names: "${STACKS[@]}"
 
-            export OldWorkflowID=$(curl --insecure https://kvdb.io/${DqZVv2PAwyBRsc3N93494u}/old_workflow_id)
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/${DqZVv2PAwyBRsc3N93494u}/old_Workflow_id)
             echo Old Workflow ID: $OldWorkflowID
 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
@@ -476,7 +476,7 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
 
-workflows:
+Workflows:
   default:
     jobs:
       - build-frontend
