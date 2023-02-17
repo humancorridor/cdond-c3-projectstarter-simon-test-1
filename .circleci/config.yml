@@ -435,6 +435,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update -y
+            sudo apt install -y curl tar gzip
       - run:
           name: Save Old Workflow ID to kvdb.io
           command: |
