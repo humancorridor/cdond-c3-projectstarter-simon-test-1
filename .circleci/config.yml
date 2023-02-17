@@ -131,16 +131,12 @@ jobs:
 
   test-frontend:
     docker:
-      # Docker image here
       - image: cimg/node:13.8.0   #Executor
     steps:
-      # Checkout code from git
       - checkout
-      # Restore from cache
       - restore_cache:
           keys:
             - frontend-deps-{{ checksum "frontend/package-lock.json" }}
-      # Your job code here
       # - run:
       #     name: Install dependencies
       #     command: |
@@ -155,16 +151,12 @@ jobs:
 
   test-backend:
     docker:
-      # Docker image here
       - image: cimg/node:13.8.0   #Executor
     steps:
-      # Checkout code from git
       - checkout
-      # Restore from cache
       - restore_cache:
           keys:
             - backend-deps-{{ checksum "backend/package-lock.json" }}
-      # Your job code here
       # - run:
       #     name: Install dependencies
       #     command: |
@@ -179,16 +171,12 @@ jobs:
 
   scan-frontend:
     docker:
-      # Docker image here
       - image: cimg/node:13.8.0   #Executor
     steps:
-      # Checkout code from git
       - checkout
-      # Restore from cache
       - restore_cache:
           keys:
             - frontend-deps-{{ checksum "frontend/package-lock.json" }}
-      # Your job code here
       # - run:
       #     name: Install dependencies
       #     command: |
@@ -205,16 +193,12 @@ jobs:
 
   scan-backend:
     docker:
-      # Docker image here
       - image: cimg/node:13.8.0   #Executor
     steps:
-      # Checkout code from git
       - checkout
-      # Restore from cache
       - restore_cache:
           keys:
             - backend-deps-{{ checksum "backend/package-lock.json" }}
-      # Your job code here
       # - run:
           # name: Install dependencies
           # command: |
@@ -320,14 +304,11 @@ jobs:
       # Docker image here that supports Ansible
       - image: cimg/python:3.10
     steps:
-      # Checkout code from git
       - checkout
       - install_ansible
       - install_awscli
-      # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
-      # attach workspace
       - attach_workspace:
           at: ~/
       - run:
@@ -344,7 +325,6 @@ jobs:
     docker:
       - image: cimg/python:3.10
     steps:
-      # Checkout code from git
       - checkout
       - install_awscli
       - install_nodejs
@@ -432,10 +412,12 @@ jobs:
           name: Package Backend
           command: |
             cd backend
+            pwd
             npm run build
             tar -czf artifact.tar.gz dist/* package*
 
             cd ..
+            pwd
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
@@ -573,7 +555,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
+      - cloudfront-update:
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
