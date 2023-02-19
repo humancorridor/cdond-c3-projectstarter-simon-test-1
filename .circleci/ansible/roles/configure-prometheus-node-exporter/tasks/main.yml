@@ -14,7 +14,7 @@
 - name: 'Configure a Service'
   become: true
   copy:
-    src: node_exporter.service
+    src: /roles/configure-prometheus-node-exporter/files/node_exporter.service
     dest: /etc/systemd/system/node_exporter.service
 
 - name: 'Configure Systemd'
