@@ -1,0 +1,89 @@
+---
+
+# - name: "create prometheus directory under /etc/"
+#   become: true
+#   file:
+#     path: /etc/prometheus
+#     state: directory
+
+# - name: "create prometheus directory under /var/lib/"
+#   become: true
+#   file:
+#     path: /var/lib/prometheus
+#     state: directory
+
+- name: "install prometheus"
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v2.19.0/prometheus-2.19.0.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: "move binary to /usr/local/bin."
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    remote_src: yes
+    mode: '0777'
+
+- name: "move promtool binary to /usr/local/bin."
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/promtool
+    dest: /usr/local/bin/promtool
+    remote_src: yes
+    mode: '0777'
+
+- name: "create prometheus  directory"
+  become: true
+  file:
+    path: /etc/prometheus
+    state: directory
+
+- name: "create prometheus  directory in /var/lib"
+  become: true
+  file:
+    path: /var/lib/prometheus
+    state: directory
+
+- name: "move consoles to /etc/prometheus directory"
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/consoles
+    dest: /etc/prometheus/
+    remote_src: yes
+    mode: '0777'
+
+- name: "move consoles to /etc/prometheus directory"
+  become: true
+  copy:
+    src: /tmp/prometheus-2.19.0.linux-amd64/console_libraries
+    dest: /etc/prometheus/
+    remote_src: yes
+    mode: '0777'
+
+# - name: "copy prometheus.yml configuration to /etc/prometheus/"
+#   become: true
+#   copy:
+#     src: prometheus.yml
+#     dest: /etc/prometheus/
+
+- name: "add prometheus.service configuration to /etc/systemd/system"
+  become: true
+  copy:
+    src: prometheus.service
+    dest: /etc/systemd/system/
+
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes
+
+# - name: "enable prometheus service"
+#   become: true
+#   shell: |
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable prometheus
