@@ -450,7 +450,7 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
-            --stack-name udapeople-cloudfront \
+            --stack-name InitialStack \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
 # rolls back; should migration fail
       - destroy-environment:
@@ -592,7 +592,8 @@ jobs:
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Append IP to inventory file
-          command: aws ec2 describe-instances \
+          command: |
+            aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=prometheus" \
             --output text >> .circleci/ansible/inventory.txt
@@ -637,7 +638,7 @@ workflows:
           requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
-      - configure-node-exporter:
-          requires: [smoke-test]
-      - deploy-prometheus-server:
-          requires: [configure-node-exporter]
+      # - configure-node-exporter:
+      #     requires: [smoke-test]
+      # - deploy-prometheus-server:
+      #     requires: [configure-node-exporter]
