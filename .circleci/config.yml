@@ -557,7 +557,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
-            ansible-playbook  configure-prometheus-node-exporter.yml -i inventory.txt
+            ansible-playbook configure-prometheus-node-exporter.yml -i inventory.txt
 
   deploy-prometheus-server:
     docker:
