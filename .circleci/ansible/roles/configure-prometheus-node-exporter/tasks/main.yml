@@ -1,4 +1,9 @@
 ---
+- name: "update and upgrade packages"
+  shell: |
+    sudo apt upgrade -y
+    sudo apt-get update -y
+    sudo apt autoremove
 
 - name: 'Create user for Prometheus Node Exporter'
   shell: |
