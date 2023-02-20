@@ -65,11 +65,10 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/${DqZVv2PAwyBRsc3N93494u}/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.workflow_id >>)
 
             # Logic for reverting the database state
-            if (( $SUCCESS == 1 ));
-            then
+            if [ $SUCCESS == 1 ]; then
               cd ~/project/backend
               npm install
               npm run migration:revert
@@ -223,7 +222,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople \
+              --tags Project=Udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
