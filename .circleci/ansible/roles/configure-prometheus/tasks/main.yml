@@ -1,16 +1,8 @@
 ---
 
-# - name: "create prometheus directory under /etc/"
-#   become: true
-#   file:
-#     path: /etc/prometheus
-#     state: directory
-
-# - name: "create prometheus directory under /var/lib/"
-#   become: true
-#   file:
-#     path: /var/lib/prometheus
-#     state: directory
+- name: 'Create user for Prometheus'
+  shell: |
+    sudo useradd --no-create-home prometheus
 
 - name: "install prometheus"
   unarchive:
@@ -34,13 +26,13 @@
     remote_src: yes
     mode: '0777'
 
-- name: "create prometheus  directory"
+- name: "create prometheus directory"
   become: true
   file:
     path: /etc/prometheus
     state: directory
 
-- name: "create prometheus  directory in /var/lib"
+- name: "create prometheus directory in /var/lib"
   become: true
   file:
     path: /var/lib/prometheus
@@ -54,7 +46,7 @@
     remote_src: yes
     mode: '0777'
 
-- name: "move consoles to /etc/prometheus directory"
+- name: "move consoles_libraries to /etc/prometheus directory"
   become: true
   copy:
     src: /tmp/prometheus-2.19.0.linux-amd64/console_libraries
@@ -71,14 +63,14 @@
 - name: "Create/add prometheus.yml configuration to /etc/systemd/system"
   become: true
   copy:
-    src: roles/configure-prometheus/files/prometheus.service
-    dest: /etc/systemd/system/
+    src: roles/configure-prometheus/files/prometheus.yml
+    dest: /etc/systemd/system/prometheus.yml
 
 - name: "add prometheus.service configuration to /etc/systemd/system"
   become: true
   copy:
     src: roles/configure-prometheus/files/prometheus.service
-    dest: /etc/systemd/system/
+    dest: /etc/systemd/system/prometheus.service
 
 - name: "enable prometheus service"
   become: true
@@ -93,3 +85,15 @@
 #   shell: |
 #     sudo systemctl daemon-reload
 #     sudo systemctl enable prometheus
+
+# - name: "create prometheus directory under /etc/"
+#   become: true
+#   file:
+#     path: /etc/prometheus
+#     state: directory
+
+# - name: "create prometheus directory under /var/lib/"
+#   become: true
+#   file:
+#     path: /var/lib/prometheus
+#     state: directory

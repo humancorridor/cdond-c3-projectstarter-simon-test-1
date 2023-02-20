@@ -1,4 +1,5 @@
 ---
+
 - name: "install alert manager"
   unarchive:
     src: https://github.com/prometheus/alertmanager/releases/download/v0.21.0/alertmanager-0.21.0.linux-amd64.tar.gz
@@ -30,20 +31,20 @@
 - name: "copy rules.yml to prometheus config folder"
   become: true
   copy:
-    src: rules.yml
-    dest: /etc/prometheus/
+    src: roles/configure-alertmanager/files/rules.yml
+    dest: /etc/prometheus/rules.yml
 
-- name: "copy alertmanager.yml to prometheus config folder"
+- name: "copy alertmanager.yml to /etc/prometheus config folder"
   become: true
   copy:
-    src: alertmanager.yml
-    dest: /etc/prometheus/
+    src: roles/configure-alertmanager/files/alertmanager.yml
+    dest: /etc/prometheus/alertmanager
 
 - name: "add alertmanager service configuration."
   become: true
   copy:
-    src: alertmanager.service
-    dest: /etc/systemd/system/
+    src: roles/configure-alertmanager/files/alertmanager.service
+    dest: /etc/systemd/system/alertmanager.service
 
 - name: "enable alertmanager service"
   become: true
@@ -56,6 +57,6 @@
 - name: "update prometheus.yml file"
   become: true
   copy:
-    src: prometheus.yml
+    src: roles/configure-alertmanager/files/prometheus.yml
     dest: /etc/prometheus/prometheus.yml
 

@@ -1,9 +1,4 @@
 ---
-- name: "update and upgrade packages"
-  shell: |
-    sudo apt upgrade -y
-    sudo apt-get update -y
-    sudo apt autoremove
 
 - name: 'Create user for Prometheus Node Exporter'
   shell: |
@@ -29,6 +24,11 @@
     sudo systemctl start node_exporter
     sudo systemctl status node_exporter       
 
+# - name: "update and upgrade packages"
+#   shell: |
+#     sudo apt upgrade -y
+#     sudo apt-get update -y
+#     sudo apt autoremove
 
 # - name: 'Executing Node app with PM2'
 #   shell: |
