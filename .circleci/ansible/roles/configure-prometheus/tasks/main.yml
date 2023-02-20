@@ -71,7 +71,7 @@
 - name: "add prometheus.service configuration to /etc/systemd/system"
   become: true
   copy:
-    src: prometheus.service
+    src: roles/configure-prometheus/files/prometheus.service
     dest: /etc/systemd/system/
 
 - name: "enable prometheus service"

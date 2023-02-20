@@ -17,17 +17,23 @@
       wait_for_connection:
         timeout: 600
 
-- name: update and upgrade packages  # sudo apt upgrade
-  become: yes
-  apt:
-    upgrade: yes
-    update_cache: yes
-    cache_valid_time: 86400
+- name: 'update and upgrade packages  # sudo apt upgrade'
+  shell: |
+    sudo apt upgrade -y
+    sudo apt-get update -y
+    sudo apt autoremove
 
-- name: remove dependences that are not needed  # sudo apt autoremove
-  become: yes
-  apt:
-    autoremove: yes
+# - name: update and upgrade packages  # sudo apt upgrade
+#   become: yes
+#   apt:
+#     upgrade: yes
+#     update_cache: yes
+#     cache_valid_time: 86400
+
+# - name: remove dependences that are not needed  # sudo apt autoremove
+#   become: yes
+#   apt:
+#     autoremove: yes
 
 # - name: 'Install Node.js 13'
 #   shell: |
@@ -38,7 +44,6 @@
 #     # Use n version manager to switch to Node.js v13.8.0
 #     sudo npm install -g n
 #     sudo n 13.8.0
-
 
   roles:
     - configure-prometheus-node-exporter
