@@ -214,7 +214,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   #Executor
     steps:
       - checkout
       - install_awscli
@@ -253,7 +253,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   #Executor
     steps:
       - checkout
       - install_ansible
@@ -274,7 +274,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   #Executor
     steps:
       - checkout
       - install_awscli
@@ -305,7 +305,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   #Executor
     steps:
       - checkout
       - install_awscli
@@ -342,7 +342,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.10   #Executor
     steps:
       - checkout
       - install_ansible
@@ -387,7 +387,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:stable   #Executor
     steps:
       - checkout
       - install_awscli
@@ -425,9 +425,9 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: cimg/base:stable
-      # - image: circleci/node:13.8.0 
-      # - image: alpine:latest   
+      - image: cimg/base:stable   #Executor
+      # - image: circleci/node:13.8.0    #Executor
+      # - image: alpine:latest      #Executor
     steps:
       - checkout
       - install_awscli
@@ -460,7 +460,7 @@ jobs:
 
   cleanup:
     docker:                                                                           
-      - image: cimg/base:stable
+      - image: cimg/base:stable   #Executor
     steps:
       - checkout
       - install_awscli
@@ -485,23 +485,6 @@ jobs:
 
 
 # =============================================================================================
-  # cloudfront-update:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Update cloudfront distribution
-  #         command: |
-  #           aws cloudformation deploy \
-  #           --template-file .circleci/files/cloudfront.yml \
-  #           --stack-name InitialStack \
-  #           --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-  #           --tags project=udapeople
-  #     - destroy-environment:
-  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-  #     - revert-migrations 
-
 
   # cleanup:
   #   docker:
@@ -530,11 +513,11 @@ jobs:
   #             echo No old stack to remove
   #           fi
   #           done
-
+# =====================================================================================
   configure-node-exporter:
     docker:
-      # - image: amazon/aws-cli
-      - image: cimg/python:3.10      
+      # - image: amazon/aws-cli   #Executor
+      - image: cimg/python:3.10     #Executor    
     steps:
       - checkout
       - install_ansible
@@ -561,8 +544,8 @@ jobs:
 
   deploy-prometheus-server:
     docker:
-      # - image: amazon/aws-cli
-      - image: cimg/python:3.10      
+      # - image: amazon/aws-cli    #Executor
+      - image: cimg/python:3.10         #Executor
     steps:
       - checkout
       - install_ansible

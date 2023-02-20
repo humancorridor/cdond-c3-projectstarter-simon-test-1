@@ -28,6 +28,12 @@
     path: /var/lib/alertmanager
     state: directory
 
+- name: "create/update prometheus.yml file"
+  become: true
+  copy:
+    src: roles/configure-alertmanager/files/prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+
 - name: "copy rules.yml to prometheus config folder"
   become: true
   copy:
@@ -38,13 +44,30 @@
   become: true
   copy:
     src: roles/configure-alertmanager/files/alertmanager.yml
-    dest: /etc/prometheus/alertmanager
+    dest: /etc/prometheus/alertmanager.yml
 
 - name: "add alertmanager service configuration."
   become: true
   copy:
     src: roles/configure-alertmanager/files/alertmanager.service
     dest: /etc/systemd/system/alertmanager.service
+
+- name: 'Change permissions of directories, files and Binaries for Prometheus'
+  shell: |
+    sudo chown prometheus:prometheus /etc/prometheus
+    sudo chown prometheus:prometheus /usr/local/bin/prometheus
+    sudo chown prometheus:prometheus /usr/local/bin/promtool
+    sudo chown -R prometheus:prometheus /etc/prometheus/consoles
+    sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries
+    sudo chown -R prometheus:prometheus /var/lib/prometheus
+
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes
 
 - name: "enable alertmanager service"
   become: true
@@ -54,9 +77,4 @@
     name: alertmanager
     enabled: yes
 
-- name: "update prometheus.yml file"
-  become: true
-  copy:
-    src: roles/configure-alertmanager/files/prometheus.yml
-    dest: /etc/prometheus/prometheus.yml
 

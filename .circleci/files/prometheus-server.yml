@@ -1,5 +1,5 @@
 Description: >
-  UdaPeople backend stack.
+  UdaPeople Prometheus Server backend stack.
 
 Parameters:
   ID:
@@ -11,7 +11,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Sub UdaPeopleProm-${ID}
-      GroupDescription: Allows port 22, port 9090 and port 9030 inbound.
+      GroupDescription: Allows ports 22, 9030, 9090 and 9100 inbound.
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -25,6 +25,10 @@ Resources:
           FromPort: 9030
           ToPort: 9030
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9100
+          ToPort: 9100
+          CidrIp: 0.0.0.0/0          
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -35,6 +39,9 @@ Resources:
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
       # Ubuntu 18 or higher works fine
       ImageId: ami-0557a15b87f6559cf 
+      IamInstanceProfile: arn:aws:iam::673237112358:role/PrometheusEC2ReadOnly
       Tags:
+        - Key: Project
+          Value: Udapeople
         - Key: Name
-          Value: !Sub Udapeople-prom-${ID}
+          Value: !Sub Udapeople-prom-${ID}          

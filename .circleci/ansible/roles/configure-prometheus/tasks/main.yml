@@ -6,14 +6,14 @@
 
 - name: "install prometheus"
   unarchive:
-    src: https://github.com/prometheus/prometheus/releases/download/v2.19.0/prometheus-2.19.0.linux-amd64.tar.gz
+    src: https://github.com/prometheus/prometheus/releases/download/v2.41.0/prometheus-2.41.0.linux-amd64.tar.gz
     dest: /tmp
     remote_src: yes
 
 - name: "move binary to /usr/local/bin."
   become: true
   copy:
-    src: /tmp/prometheus-2.19.0.linux-amd64/prometheus
+    src: /tmp/prometheus-2.41.0.linux-amd64/prometheus
     dest: /usr/local/bin/prometheus
     remote_src: yes
     mode: '0777'
@@ -21,7 +21,7 @@
 - name: "move promtool binary to /usr/local/bin."
   become: true
   copy:
-    src: /tmp/prometheus-2.19.0.linux-amd64/promtool
+    src: /tmp/prometheus-2.41.0.linux-amd64/promtool
     dest: /usr/local/bin/promtool
     remote_src: yes
     mode: '0777'
@@ -41,7 +41,7 @@
 - name: "move consoles to /etc/prometheus directory"
   become: true
   copy:
-    src: /tmp/prometheus-2.19.0.linux-amd64/consoles
+    src: /tmp/prometheus-2.41.0.linux-amd64/consoles
     dest: /etc/prometheus/
     remote_src: yes
     mode: '0777'
@@ -49,22 +49,16 @@
 - name: "move consoles_libraries to /etc/prometheus directory"
   become: true
   copy:
-    src: /tmp/prometheus-2.19.0.linux-amd64/console_libraries
+    src: /tmp/prometheus-2.41.0.linux-amd64/console_libraries
     dest: /etc/prometheus/
     remote_src: yes
     mode: '0777'
 
-# - name: "copy prometheus.yml configuration to /etc/prometheus/"
+# - name: "Create/add prometheus.yml configuration to /etc/systemd/system"
 #   become: true
 #   copy:
-#     src: prometheus.yml
-#     dest: /etc/prometheus/
-
-- name: "Create/add prometheus.yml configuration to /etc/systemd/system"
-  become: true
-  copy:
-    src: roles/configure-prometheus/files/prometheus.yml
-    dest: /etc/systemd/system/prometheus.yml
+#     src: roles/configure-prometheus/files/prometheus.yml
+#     dest: /etc/systemd/system/prometheus.yml
 
 - name: "add prometheus.service configuration to /etc/systemd/system"
   become: true
@@ -72,13 +66,17 @@
     src: roles/configure-prometheus/files/prometheus.service
     dest: /etc/systemd/system/prometheus.service
 
-- name: "enable prometheus service"
-  become: true
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: prometheus
-    enabled: yes
+# - name: 'Change permissions of directories, files and Binaries for Prometheus'
+#   shell: |
+#     sudo useradd --no-create-home prometheus
+
+# - name: "enable prometheus service"
+#   become: true
+#   systemd:
+#     state: restarted
+#     daemon_reload: yes
+#     name: prometheus
+#     enabled: yes
 
 # - name: "enable prometheus service"
 #   become: true
@@ -91,6 +89,12 @@
 #   file:
 #     path: /etc/prometheus
 #     state: directory
+
+# - name: "copy prometheus.yml configuration to /etc/prometheus/"
+#   become: true
+#   copy:
+#     src: prometheus.yml
+#     dest: /etc/prometheus/
 
 # - name: "create prometheus directory under /var/lib/"
 #   become: true

@@ -24,18 +24,6 @@
     sudo systemctl start node_exporter
     sudo systemctl status node_exporter       
 
-# - name: "update and upgrade packages"
-#   shell: |
-#     sudo apt upgrade -y
-#     sudo apt-get update -y
-#     sudo apt autoremove
-
-# - name: 'Executing Node app with PM2'
-#   shell: |
-#     cd ~/backend-app/dist
-#     pm2 stop default
-#     pm2 start main.js
-
 
 # - name: "install node exporter."
 #   unarchive:
@@ -54,8 +42,8 @@
 # - name: "add node exporter configuration."
 #   become: true
 #   copy:
-#     src: node_exporter.service
-#     dest: /etc/systemd/system/
+#     src: roles/configure-prometheus-node-exporter/files/node_exporter.service
+#     dest: /etc/systemd/system/node_exporter.service
 
 # - name: "enable node_exporter service"
 #   become: true
@@ -64,9 +52,3 @@
 #     daemon_reload: yes
 #     name: node_exporter
 #     enabled: yes
-
-# - name: "install node exporter."
-#   unarchive:
-#     src: https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
-#     dest: /tmp
-#     remote_src: yes
