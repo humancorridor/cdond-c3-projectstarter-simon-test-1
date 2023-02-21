@@ -549,7 +549,6 @@ jobs:
       - checkout
       - install_ansible
       - install_awscli
-
       - add_ssh_keys:
           fingerprints: ["d4:64:2b:23:8c:d9:0c:72:4e:7f:f7:1b:fa:81:6b:3e"]
       # - run:
@@ -620,7 +619,7 @@ workflows:
           requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
-      - configure-node-exporter:
-          requires: [smoke-test]
-      - deploy-prometheus-server:
-          requires: [configure-node-exporter]
+      # - configure-node-exporter:
+      #     requires: [smoke-test]
+      # - deploy-prometheus-server:
+      #     requires: [configure-node-exporter]
