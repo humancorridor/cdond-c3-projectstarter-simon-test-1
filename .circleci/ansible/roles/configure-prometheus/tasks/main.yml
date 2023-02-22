@@ -60,7 +60,7 @@
 #     src: roles/configure-prometheus/files/prometheus.yml
 #     dest: /etc/systemd/system/prometheus.yml
 
-- name: "add prometheus.service configuration to /etc/systemd/system"
+- name: "Create/add prometheus.service configuration to /etc/systemd/system"
   become: true
   copy:
     src: roles/configure-prometheus/files/prometheus.service
