@@ -36,7 +36,7 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      workflow_id:
+      Workflow_id:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
@@ -44,20 +44,20 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            echo Destroying environment <<parameters.workflow_id>>
+            echo Destroying environment <<parameters.Workflow_id>>
             # Empty frontend bucket
-            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
+            aws s3 rm s3://udapeople-<<parameters.Workflow_id>> --recursive
 
             # Delete frontend stack
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_id >>
 
             # Delete backend stack
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_id >>
 
   revert-migrations:
     description: Revert the last migration, if any were executed during the current workflow
     parameters:
-      workflow_id:
+      Workflow_id:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
@@ -65,13 +65,13 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_id >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 )); then
               cd ~/project/backend
               npm install
               npm run build
-              npm run migrations:revert
+              npm run migration:revert
             fi
 
 orbs: 
@@ -214,8 +214,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   # Here's where you will add some code to rollback on failure
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   # Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
     docker:
@@ -234,10 +234,9 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
-
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-environment:  # Here's where you will add some code to rollback on failure
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - destroy-environment  # Here's where you will add some code to rollback on failure
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
 
   run-migrations:
     docker:
@@ -265,10 +264,10 @@ jobs:
               echo "No migrations are pending" 
             fi
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations  
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
@@ -302,10 +301,10 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist            
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations 
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-backend:
     docker:
@@ -332,7 +331,6 @@ jobs:
             cd backend
             npm run build
             tar -czf artifact.tar.gz dist/* package*
-
             cd ..
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
@@ -342,15 +340,14 @@ jobs:
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
-
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -vvv -i inventory.txt deploy-backend.yml
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations 
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -367,7 +364,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             export API_URL=http://${BACKEND_PUBLIC_IP}:3030
-            if curl --connect-timeout 30 $API_URL/api/status | grep "ok"
+            if curl --connect-timeout 60 $API_URL/api/status | grep "ok"
             then
               exit 0
             else
@@ -380,15 +377,15 @@ jobs:
             if curl -s $FRONTEND_WEBSITE | grep "Welcome"
             then
               # This is the intentional error, if "Welcome" is indeed in the response this step will exit with exit code 1
-              exit 0
+              exit 1
             else
               exit 1
             fi
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations  
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
@@ -420,10 +417,10 @@ jobs:
             --stack-name InitialStack \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
 # rolls back; should migration fail
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:   
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+          # workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:                                                                           
@@ -572,16 +569,16 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
